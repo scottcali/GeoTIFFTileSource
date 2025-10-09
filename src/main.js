@@ -12,6 +12,9 @@ import { Converters } from "./utils/Converters.js";
 import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 
 /**
+ *  GeoTIFF Tile Source	2025.10.09 
+ *  Adding new GeoTiff,js 2025.10.09 Version 2.1.4-beta.0
+ *
  * Enable GeoTIFF Tile Source for OpenSeadragon.
  *
  * The GeoTIFFTileSource uses the GeoTIFF.js library to serve tiles from local file or a remote URL.
