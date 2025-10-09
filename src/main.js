@@ -4,7 +4,10 @@
  * to Fix the issue
  *
  */
- 
+
+console.log("Loading GeoTIFF Tile Source from 2025.10.09  ..."); 
+
+
 import { fromBlob, fromUrl, globals, Pool } from "geotiff";
 import { DeferredPromise } from "./utils/DeferredPromise.js";
 import { parsePerkinElmerChannels } from "./formats/perkinElmer.js";
