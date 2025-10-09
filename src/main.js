@@ -1,3 +1,10 @@
+/**
+ * GeoTIFF Tile Source	2025.10.09 
+ * Adding new GeoTiff,js 2025.10.09 Version 2.1.4-beta.0
+ * to Fix the issue
+ *
+ */
+ 
 import { fromBlob, fromUrl, globals, Pool } from "geotiff";
 import { DeferredPromise } from "./utils/DeferredPromise.js";
 import { parsePerkinElmerChannels } from "./formats/perkinElmer.js";

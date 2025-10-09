@@ -30,13 +30,13 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "geotiff": "git+https://github.com/Recontaminated/geotiff.js"
+    "geotiff": "git+https://github.com/scottcali/geotiff.js"
   },
   "peerDependencies": {
     "openseadragon": "^3.0.0 || ^4.0.0 || ^5.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Recontaminated/GeoTIFFTileSource"
+    "url": "https://github.com/scottcali/GeoTIFFTileSource"
   }
 }

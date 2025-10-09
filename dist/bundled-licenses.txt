@@ -38,7 +38,7 @@ Version: 2.2.0
 License: null
 Private: false
 Description: A plugin tilesource for OpenSeadragon that uses geotiff.js to provide serverless access to view compatible local or remote TIFF files
-Repository: https://github.com/Recontaminated/GeoTIFFTileSource
+Repository: https://github.com/scottcali/GeoTIFFTileSource
 License Copyright:
 ===
 
