@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/main.js"),
       name: "GeoTIFFTileSource",
-      formats: ["es", "umd"],
+      formats: ["es"],
       fileName: (format) => {
         // Use .mjs for identifying ES modules, and .js for UMD modules
         if (format === "es") {
@@ -20,6 +20,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
+		format: 'iife', // Or 'umd'
         inlineDynamicImports: true,
       },
     },
@@ -38,4 +39,13 @@ export default defineConfig({
   test: {
     environment: "jsdom",
   },
+  worker: { // Or build.rollupOptions.output if not worker-specific
+			rollupOptions: {
+			  output: {
+				format: 'iife', // Or 'umd'
+				inlineDynamicImports: true,
+			  },
+			},
+   },
+	  
 });
