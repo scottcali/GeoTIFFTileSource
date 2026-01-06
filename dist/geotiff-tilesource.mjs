@@ -1450,7 +1450,7 @@ const wc = typeof Worker < "u" ? Worker : void 0;
 function Qc() {
   return new wc(new URL(
     /* @vite-ignore */
-    "/assets/decoder-t7Liz-Cd.js",
+    "./assets/decoder-t7Liz-Cd.js",
     import.meta.url
   ), {
     type: "module"
