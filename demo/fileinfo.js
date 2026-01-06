@@ -1,3 +1,10 @@
+import OpenSeadragon from "openseadragon";
+// 1. Import the enablement function from the plugin
+import { enableGeoTIFFTileSource } from "../dist/geotiff-tilesource.mjs";
+
+// 2. Attach the GeoTIFFTileSource to the OpenSeadragon object
+enableGeoTIFFTileSource(OpenSeadragon);
+
 document.getElementById("file-picker").onchange = function (ev) {
   clearImageInfo();
 
