@@ -1,8 +1,14 @@
-import OpenSeadragon from "openseadragon";
-// 1. Import the enablement function from the plugin
 import { enableGeoTIFFTileSource } from "../dist/geotiff-tilesource.mjs";
+// The CDN script already created `window.OpenSeadragon`.
+if (!window.OpenSeadragon) {
+  // Helpful early‑failure message if the CDN script didn’t load.
+  throw new Error(
+    "OpenSeadragon is not available. Make sure the CDN script <script src=\"https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js\"></script> is loaded before demo.js."
+  );
+}
+const OpenSeadragon = window.OpenSeadragon;
 
-// 2. Attach the GeoTIFFTileSource to the OpenSeadragon object
+// Register the plugin (adds `OpenSeadragon.GeoTIFFTileSource` etc.)
 enableGeoTIFFTileSource(OpenSeadragon);
 
 document.getElementById("file-picker").onchange = function (ev) {
