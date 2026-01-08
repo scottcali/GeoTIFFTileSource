@@ -1,42 +1,11 @@
 <head>
     <title>GeoTIFFTileSource Demo</title>
-	
-	<!-- "fs": "https://cdn.jsdelivr.net/npm/browserify-fs/+esm",-->
-	<script type="importmap">
-	{
-	  "imports": {
-		"@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
-		
-		"web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
-		"quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
-		"zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
-		"pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
-		"lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
-
-		"http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
-		"https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
-		"url": "https://cdn.jsdelivr.net/npm/url/+esm",
-		
-		"xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
-		"xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
-		"xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
-		"xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
-
-		"fs": "data:text/javascript,export default {}",
-		"path": "https://cdn.jsdelivr.net/npm/path-browserify/+esm",
-		"buffer": "https://cdn.jsdelivr.net/npm/buffer/+esm",
-		"process": "https://cdn.jsdelivr.net/npm/process/+esm"
-	  }
-	}
-	</script>
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"></script>
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js"></script> -->
     <link rel="stylesheet" href="./demo.css">
 
     <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
-    <!-- <script type="module" src="../dist/geotiff-tilesource.mjs"></script> -->
-    <script type="module" src="../src/main.js"></script>
+    <script type="module" src="../dist/geotiff-tilesource.mjs"></script>
     <script type="module" src="./demo.js"></script>
  </head>
  <body>

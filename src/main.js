@@ -8,7 +8,7 @@
 console.log("Loading GeoTIFF Tile Source from 2025.10.09  ..."); 
 
 
-import { fromBlob, fromUrl, globals, Pool } from "./utils/geotiff";
+import { fromBlob, fromUrl, globals, Pool } from "./utils/geotiff.js";
 import { DeferredPromise } from "./utils/DeferredPromise.js";
 import { parsePerkinElmerChannels } from "./formats/perkinElmer.js";
 import { Converters } from "./utils/Converters.js";
