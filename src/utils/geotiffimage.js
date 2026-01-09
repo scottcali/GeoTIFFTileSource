@@ -1,7 +1,7 @@
 /** @module geotiffimage */
 import { getFloat16 } from '@petamoriken/float16';
-import getAttribute from 'xml-utils/get-attribute.js';
-import findTagsByName from 'xml-utils/find-tags-by-name.js';
+import getAttribute from 'xml-utils/get-attribute.js'; // eslint-disable-line import/extensions
+import findTagsByName from 'xml-utils/find-tags-by-name.js'; // eslint-disable-line import/extensions
 
 import { photometricInterpretations, ExtraSamplesValues } from './globals.js';
 import { fromWhiteIsZero, fromBlackIsZero, fromPalette, fromCMYK, fromYCbCr, fromCIELab } from './rgb.js';

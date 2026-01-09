@@ -46,7 +46,7 @@ export function preferWorker(fileDirectory) {
 }
 
 // Add default decoders to registry (end-user may override with other implementations)
-addDecoder([undefined, 1], () => import('./raw.js').then((m) => m.default));
+addDecoder([undefined, 1], () => import('./raw.js').then((m) => m.default), false);
 addDecoder(5, () => import('./lzw.js').then((m) => m.default));
 addDecoder(6, () => {
   throw new Error('old style JPEG compression is not supported.');
@@ -68,5 +68,4 @@ addDecoder(50000, () => import('./zstd.js')
   })
   .then((m) => m.default),
 );
-addDecoder(50001, () => import('./webimage.js').then((m) => m.default));
-
+addDecoder(50001, () => import('./webimage.js').then((m) => m.default), false);

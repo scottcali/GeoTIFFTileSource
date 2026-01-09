@@ -87,7 +87,7 @@ export default class DataSlice {
       if (!Number.isSafeInteger(combined)) {
         throw new Error(
           `${combined} exceeds MAX_SAFE_INTEGER. `
-          + 'Precision may be lost. Please report if you get this message to https://github.com/scottcali//geotiff.js/issues',
+          + 'Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues',
         );
       }
       return combined;
@@ -96,7 +96,7 @@ export default class DataSlice {
     if (!Number.isSafeInteger(combined)) {
       throw new Error(
         `${combined} exceeds MAX_SAFE_INTEGER. `
-        + 'Precision may be lost. Please report if you get this message to https://github.com/scottcali//geotiff.js/issues',
+        + 'Precision may be lost. Please report if you get this message to https://github.com/geotiffjs/geotiff.js/issues',
       );
     }
 

@@ -1,11 +1,11 @@
 /**
- * GeoTIFF Tile Source	2025.10.09 
- * Adding new GeoTiff,js 2025.10.09 Version 2.1.4-beta.0
+ * GeoTIFF Tile Source 2026.01.07 
+ * Adding new GeoTiff,js 2026.01.07 Version 2.1.4-beta.1
  * to Fix the issue
  *
  */
 
-console.log("Loading GeoTIFF Tile Source from 2025.10.09  ..."); 
+console.log("Loading GeoTIFF Tile Source from 2026.01.07  ..."); 
 
 
 import { fromBlob, fromUrl, globals, Pool } from "./utils/geotiff.js";
@@ -15,8 +15,8 @@ import { Converters } from "./utils/Converters.js";
 import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 
 /**
- *  GeoTIFF Tile Source	2025.10.09 
- *  Adding new GeoTiff,js 2025.10.09 Version 2.1.4-beta.0
+ *  GeoTIFF Tile Source	2026.01.07 
+ *  Adding new GeoTiff,js 2026.01.07 Version 2.1.4-beta.1
  *
  * Enable GeoTIFF Tile Source for OpenSeadragon.
  *

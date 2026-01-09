@@ -1,8 +1,8 @@
 /**
- * GeoTiff Reader 2025.10.09 Version 2.1.4-beta.0
+ * GeoTiff Reader 2025.10.09 Version 2.1.4-beta.1
  *
  */
-console.log("Loading GeoTiff Reader 2025.10.09 Version 2.1.4-beta.0"); 
+console.log("Loading GeoTiff Reader 2026.01.07 Version 2.1.4-beta.1"); 
 
 /** @module geotiff */
 import GeoTIFFImage from './geotiffimage.js';
@@ -765,6 +765,11 @@ export async function fromArrayBuffer(arrayBuffer, options = {}, signal) {
 
 /**
  * Construct a GeoTIFF from a local file path. (Node.js only)
+ * [filesystem API]{@link https://nodejs.org/api/fs.html} and is
+ * not available on browsers.
+ *
+ * N.B. After the GeoTIFF has been completely processed it needs
+ * to be closed but only if it has been constructed from a file.
  * @param {string} path The file path to read from.
  * @param {object} [options] Additional options.
  * @param {boolean} [options.cache=true] Whether to cache images and ICC profiles.
@@ -778,6 +783,9 @@ export async function fromFile(path, options = {}, signal) {
 
 /**
  * Construct a GeoTIFF from a File or Blob.
+ * [Blob]{@link https://developer.mozilla.org/en-US/docs/Web/API/Blob} or
+ * [File]{@link https://developer.mozilla.org/en-US/docs/Web/API/File}
+ * object.
  * @param {Blob} blob The File or Blob to read from.
  * @param {object} [options] Additional options.
  * @param {boolean} [options.cache=true] Whether to cache images and ICC profiles.
