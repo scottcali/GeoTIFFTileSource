@@ -32,61 +32,15 @@
 
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"></script> -->
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js"></script> -->
+    <script type="text/javascript" src="../openseadragon-bin-4.1.0/openseadragon.js"></script>
  
-    <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
-    <!-- <script type="text/javascript" src="../dist/geotiff.js"></script> -->
-    <script type="text/javascript" src="../dist/openseadragon-bin-4.1.0/openseadragon.js"></script> 
 
-  </script>
-
+	<link rel="stylesheet" href="./demo.css">
 
     <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
     <!-- <script type="module" src="../dist/geotiff-tilesource.mjs"></script> -->
-    <!-- <script type="module" src="../src/main.js"></script> -->
-    <!-- <script type="module" src="./demo.js"></script> -->
-
-  <!-- -------------------------------------------------
-       1️⃣ Bootstrap module – imports the three libraries,
-          creates the globals, and finally loads your demo.
-       ------------------------------------------------- -->
-  <script type="module">
-    // 1️⃣ OpenSeadragon – ES‑module build (the same file you used before)
-    //import OpenSeadragon from '../dist/openseadragon-bin-4.1.0/openseadragon.js';
-
-    // 2️⃣ GeoTIFF.js – use the ES‑module version that lives next to the
-    //    UMD wrapper you used before.  It respects the import‑map above.
-    //import * as GeoTIFF from '../dist/geotiff.js';
-
-    // 3️⃣ Tile‑source – import the **source** (not the minified bundle)
-    //    This file re‑exports the class and does NOT register itself
-    //    automatically; we do the registration manually.
-    //import { GeoTIFFTileSource } from '../src/GeoTIFFTileSource.js';
-    //import { GeoTIFFTileSource } from '../src/main.js';
-
-   // 3.2️⃣ The *source* version of the plugin – it only exports a helper
-    //       function called enableGeoTIFFTileSource.
-    import { enableGeoTIFFTileSource } from '../src/main.js';
-
-    // 3.3️⃣ Register the plugin on the global OpenSeadragon object.
-    //       The OpenSeadragon script from step 2 already put the class on
-    //       window.OpenSeadragon, so we just need to call the helper.
-    enableGeoTIFFTileSource(window.OpenSeadragon);
-	
-    // -------------------------------------------------
-    // 4️⃣ Create the globals that the *original* demo.js expects
-    // -------------------------------------------------
-    window.OpenSeadragon = OpenSeadragon;   // global for demo.js
-    //window.GeoTIFF       = GeoTIFF;         // needed by the tile source
-
-    // Attach the class to OpenSeadragon – THIS is the missing piece that
-    // caused the “undefined getAllTileSources” error.
-    //OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
-
-    // 5️⃣ Finally import the demo logic (unchanged)
-    import './demo.js';
-  </script>
-  
-	<link rel="stylesheet" href="./demo.css">
+    <script type="module" src="../src/main.js"></script>
+    <script type="module" src="./demo.js"></script>
  </head>
  <body>
      <div class="content">

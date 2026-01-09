@@ -1,15 +1,20 @@
-import { enableGeoTIFFTileSource } from "../dist/geotiff-tilesource.mjs";
-// The CDN script already created `window.OpenSeadragon`.
-if (!window.OpenSeadragon) {
-  // Helpful early‑failure message if the CDN script didn’t load.
-  throw new Error(
-    "OpenSeadragon is not available. Make sure the CDN script <script src=\"https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js\"></script> is loaded before demo.js."
-  );
-}
-const OpenSeadragon = window.OpenSeadragon;
+// 1. Import OpenSeadragon first
+//import OpenSeadragon from '../dist/openseadragon-bin-4.1.0/openseadragon.js';
+// 1. Import OpenSeadragon first
+//import OpenSeadragon from 'openseadragon';
 
-// Register the plugin (adds `OpenSeadragon.GeoTIFFTileSource` etc.)
-enableGeoTIFFTileSource(OpenSeadragon);
+// 2. Polyfill the global object (Crucial for UMD plugins)
+// UMD scripts often look for 'window.OpenSeadragon' to attach themselves.
+if (!window.OpenSeadragon) {
+    window.OpenSeadragon = OpenSeadragon;
+}
+
+// 3. Import the plugin for its side effects (No named exports)
+//import "../dist/geotiff-tilesource.min.js";
+//import "../src/main.js";
+
+//OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
+//import { GeoTIFFTileSource } from '../src/main.js';
 
 document.getElementById("file-picker").onchange = function (ev) {
   clearImageInfo();

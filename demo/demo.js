@@ -1,39 +1,25 @@
-/********************************************************************
- * demo.js – no import‑map, uses the global OpenSeadragon that we
- * loaded from the CDN in demo.html.
- *
- * What we do:
- *   1️⃣ Import only the *enable* helper from the GeoTIFF‑TileSource
- *      plugin (the plugin itself is an ES‑module, so this line stays)
- *   2️⃣ Call the helper with the global `OpenSeadragon` object.
- *   3️⃣ Use that global throughout the rest of the file.
- ********************************************************************/
 
-/* -----------------------------------------------------------------
- * 1️⃣  Import the enable‑function from the plugin.
- * ----------------------------------------------------------------- */
-import { enableGeoTIFFTileSource } from "../dist/geotiff-tilesource.mjs";
+// 1. Import OpenSeadragon first
+//import OpenSeadragon from '../dist/openseadragon-bin-4.1.0/openseadragon.js';
+// 1. Import OpenSeadragon first
+//import OpenSeadragon from 'openseadragon';
 
-/* -----------------------------------------------------------------
- * 2️⃣  Attach the GeoTIFFTileSource to the OpenSeadragon global.
- * ----------------------------------------------------------------- */
-// The CDN script already created `window.OpenSeadragon`.
+// 2. Polyfill the global object (Crucial for UMD plugins)
+// UMD scripts often look for 'window.OpenSeadragon' to attach themselves.
 if (!window.OpenSeadragon) {
-  // Helpful early‑failure message if the CDN script didn’t load.
-  throw new Error(
-    "OpenSeadragon is not available. Make sure the CDN script <script src=\"https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js\"></script> is loaded before demo.js."
-  );
+    window.OpenSeadragon = OpenSeadragon;
 }
-const OpenSeadragon = window.OpenSeadragon;
 
-// Register the plugin (adds `OpenSeadragon.GeoTIFFTileSource` etc.)
-enableGeoTIFFTileSource(OpenSeadragon);
+// 3. Import the plugin for its side effects (No named exports)
+//import "../dist/geotiff-tilesource.min.js";
+//import "../src/main.js";
 
-/* -----------------------------------------------------------------
- * 3️⃣  Create the viewer – now we can use the global OSD object.
- * ----------------------------------------------------------------- */
+//OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
+
+//import { GeoTIFFTileSource } from '../src/main.js';
+
+// Basic viewer setup
 let viewer = (window.viewer = OpenSeadragon({
-  // `element` can be a DOM node *or* the ID of the container.
   element: "viewer",
   prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
   minZoomImageRatio: 0.01,
@@ -42,136 +28,112 @@ let viewer = (window.viewer = OpenSeadragon({
   ajaxWithCredentials: true,
   sequenceMode: true,
 }));
+//https://modis-vi-nasa.s3-us-west-2.amazonaws.com//MOD13A1.006/2018.01.01.tif
 
-/* -----------------------------------------------------------------
- * UI wiring (file picker, link input, demo buttons)
- * ----------------------------------------------------------------- */
 document.getElementById("file-picker").onchange = function (ev) {
   viewer.close();
   clearImageInfo();
-  // `this.files[0]` is a File object; its `name` is shown in the UI.
+
   setupImage(this.files[0], this.files[0].name);
 };
 
 document.getElementById("use-link").onclick = function () {
   viewer.close();
   clearImageInfo();
-  const url = document.getElementById("link-input").value.trim();
+  let input = document.getElementById("link-input");
+  let url = input.value;
   if (!url) return;
   setupImage(url, url);
 };
-
-/* -----------------------------------------------------------------
- * “Demo” links – click a button, copy its URL to the input and fire
- * a click on the “Load from link” button.
- * ----------------------------------------------------------------- */
-[...document.querySelectorAll(".demo-link")].forEach((el) => {
+let links = [...document.querySelectorAll(".demo-link")].map((el) => {
   el.onclick = function () {
-    const href = this.dataset.href;
-    document.getElementById("link-input").value = href;
-    document.getElementById("use-link").dispatchEvent(new Event("click"));
+    // console.log('demo-link clicked',this);
+    let href = this.getAttribute("data-href");
+    // console.log('clicked:',href);
+    document.querySelector("#link-input").setAttribute("value", href);
+    document.querySelector("#use-link").dispatchEvent(new Event("click"));
   };
+  return el;
 });
 
-/* -----------------------------------------------------------------
- * Core logic – open a TIFF (local File or remote URL) and display it.
- * ----------------------------------------------------------------- */
 function setupImage(tileSourceInput, tilesourceName = "") {
   viewer.close();
   clearImageInfo();
   document.getElementById("filename").textContent = tilesourceName;
 
-  // Ask the plugin to create one or more GeoTIFF tile sources.
-  const tiffTileSources = OpenSeadragon.GeoTIFFTileSource.getAllTileSources(
-    tileSourceInput,
-    { logLatency: true }
-  );
+  let tiffTileSources = OpenSeadragon.GeoTIFFTileSource.getAllTileSources(tileSourceInput, {
+    logLatency: true,
+  });
+  tiffTileSources.then((ts) => viewer.open(ts));
 
-  // When the promise resolves we give the result to OSD.
-  tiffTileSources
-    .then((sources) => viewer.open(sources))
-    .catch((err) => {
-      document.getElementById(
-        "filename"
-      ).textContent += ": Error opening file. Is this a valid TIFF? See console.";
-      console.error(err);
-    });
-
-  // ---- UI: report how many sub‑images we found -----------------
   tiffTileSources
     .then((tileSources) => {
       document.getElementById("filename").textContent +=
-        ` -- ${tileSources.length} image${tileSources.length !== 1 ? "s" : ""} found`;
-      // Wait until each tile‑source has finished its async init.
-      return Promise.all(
-        tileSources.map((ts) => ts.promises.ready)
-      ).then(() => tileSources);
+        " -- " + tileSources.length + " image" + (tileSources.length != 1 ? "s" : "") + " found";
+      Promise.all(tileSources.map((t) => t.promises.ready)).then(() =>
+        showTileSourcesInfo(tileSources)
+      );
     })
-    .then(showTileSourcesInfo)
-    .catch(() => {}); // already handled above
+    .catch((error) => {
+      document.getElementById("filename").textContent +=
+        ": Error opening file. Is this a valid tiff? See console for details.";
+      console.error(error);
+    });
 }
 
-/* -----------------------------------------------------------------
- * UI helpers – clear, render info, etc.
- * ----------------------------------------------------------------- */
 function clearImageInfo() {
   document.getElementById("image-description").textContent = "";
   document.getElementById("associated-images").textContent = "";
 }
-
 function showTileSourcesInfo(tileSources) {
   clearImageInfo();
-  const desc = document.getElementById("image-description");
-
-  tileSources.forEach((ts, index) => {
-    const header = document.createElement("h3");
-    header.textContent = `TileSource #${index}`;
-    desc.appendChild(header);
-
-    showImageInfo(ts.GeoTIFFImages);
+  let desc = document.getElementById("image-description");
+  tileSources.map((ts, index) => {
+    let images = ts.GeoTIFFImages;
+    let h = document.createElement("h3");
+    h.textContent = "TileSource #" + index;
+    desc.appendChild(h);
+    showImageInfo(images);
     desc.appendChild(document.createElement("hr"));
+    return images;
   });
 }
 
 function showImageInfo(images) {
-  const container = document.getElementById("image-description");
-  const frag = document.createDocumentFragment();
+  let desc = document.getElementById("image-description");
+  let frag = document.createDocumentFragment();
 
-  images.forEach((image, i) => {
-    const wrapper = document.createElement("div");
-    frag.appendChild(wrapper);
+  images.forEach((image, index) => {
+    let d = document.createElement("div");
+    frag.appendChild(d);
+    let t = document.createElement("h4");
+    d.appendChild(t);
+    t.textContent = "Tiff Page " + index;
 
-    const h4 = document.createElement("h4");
-    h4.textContent = `Tiff Page ${i}`;
-    wrapper.appendChild(h4);
-
-    const fd = { ...image.fileDirectory };
+    let fd = Object.assign({}, image.fileDirectory);
     if (fd.ImageDescription) {
-      const infoDiv = document.createElement("div");
-      const html = `<u>ImageDescription contents for this sub‑image</u><br>${fd.ImageDescription.replaceAll(
-        "|",
-        "<br>"
-      )}`;
+      let info = document.createElement("div");
+      d.appendChild(info);
+      let ID =
+        "<u>ImageDescription contents for this subimage</u><br>" +
+        fd.ImageDescription.replaceAll("|", "<br>");
       delete fd.ImageDescription;
-      infoDiv.innerHTML = html;
-      wrapper.appendChild(infoDiv);
+      info.innerHTML = ID;
     }
 
-    // Build a printable, short‑hand version of the file directory.
-    const printable = {};
+    let to_print = {};
     Object.entries(fd).forEach(([k, v]) => {
-      printable[k] =
+      to_print[k] =
         typeof v !== "string" && v.length > 8
-          ? `${v.constructor.name} (${v.length}) [...]`
+          ? "" + v.constructor.name + " (" + v.length + ") [...]"
           : typeof v !== "string" && typeof v.length !== "undefined"
-          ? `${v.constructor.name}(${v.length}) [${[...v.values()]}]`
-          : v;
+            ? v.constructor.name + "(" + v.length + ") [" + [...v.values()] + "]"
+            : v;
     });
 
-    const pre = document.createElement("pre");
-    pre.textContent = JSON.stringify(printable, null, 2);
-    wrapper.appendChild(pre);
+    let pre = document.createElement("pre");
+    d.appendChild(pre);
+    pre.textContent = JSON.stringify(to_print, null, 2);
   });
-
-  container.appendChild(frag);
+  desc.appendChild(frag);
 }

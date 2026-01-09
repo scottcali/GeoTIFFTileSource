@@ -11,47 +11,24 @@ const OpenSeadragon = window.OpenSeadragon;
 // Register the plugin (adds `OpenSeadragon.GeoTIFFTileSource` etc.)
 enableGeoTIFFTileSource(OpenSeadragon);
 
+window.OpenSeadragon.DEFAULT_SETTINGS.timeout = 120000;
 
-// Basic viewer setup
-let viewer = (window.viewer = OpenSeadragon({
-  element: "viewer",
-  prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
-  minZoomImageRatio: 0.01,
-  visibilityRatio: 0,
-  crossOriginPolicy: "Anonymous",
-  ajaxWithCredentials: true,
-  sequenceMode: true,
-}));
-//https://modis-vi-nasa.s3-us-west-2.amazonaws.com//MOD13A1.006/2018.01.01.tif
 
 document.getElementById("file-picker").onchange = function (ev) {
-  viewer.close();
   clearImageInfo();
 
   setupImage(this.files[0], this.files[0].name);
 };
 
 document.getElementById("use-link").onclick = function () {
-  viewer.close();
   clearImageInfo();
   let input = document.getElementById("link-input");
   let url = input.value;
   if (!url) return;
   setupImage(url, url);
 };
-let links = [...document.querySelectorAll(".demo-link")].map((el) => {
-  el.onclick = function () {
-    // console.log('demo-link clicked',this);
-    let href = this.getAttribute("data-href");
-    // console.log('clicked:',href);
-    document.querySelector("#link-input").setAttribute("value", href);
-    document.querySelector("#use-link").dispatchEvent(new Event("click"));
-  };
-  return el;
-});
 
 function setupImage(tileSourceInput, tilesourceName = "") {
-  viewer.close();
   clearImageInfo();
   document.getElementById("filename").textContent = tilesourceName;
 
@@ -85,7 +62,7 @@ function showTileSourcesInfo(tileSources) {
   tileSources.map((ts, index) => {
     let images = ts.GeoTIFFImages;
     let h = document.createElement("h3");
-    h.textContent = "TileSource #" + index;
+    h.textContent = "File info";
     desc.appendChild(h);
     showImageInfo(images);
     desc.appendChild(document.createElement("hr"));
