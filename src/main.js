@@ -14,9 +14,15 @@ import { parsePerkinElmerChannels } from "./formats/perkinElmer.js";
 import { Converters } from "./utils/Converters.js";
 import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 
+// main.js – make sure these are present *once* in your bundle
+//import './utils/compression/lzw.js';
+//import './utils/compression/jpeg.js';
+//import './utils/compression/deflate.js';
+//import './utils/compression/packbits.js';
+
 /**
- *  GeoTIFF Tile Source	2026.01.07 
- *  Adding new GeoTiff,js 2026.01.07 Version 2.1.4-beta.1
+ *  GeoTIFF Tile Source	2026.01.18 
+ *  Adding new GeoTiff,js 2026.01.18 Version 3.0.0-beta.3
  *
  * Enable GeoTIFF Tile Source for OpenSeadragon.
  *

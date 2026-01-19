@@ -1,11 +1,11 @@
 /** @module geotiffimage */
 import { getFloat16 } from '@petamoriken/float16';
-import getAttribute from 'xml-utils/get-attribute'; // eslint-disable-line import/extensions
-import findTagsByName from 'xml-utils/find-tags-by-name'; // eslint-disable-line import/extensions
+import getAttribute from 'xml-utils/get-attribute.js'; // eslint-disable-line import/extensions
+import findTagsByName from 'xml-utils/find-tags-by-name.js'; // eslint-disable-line import/extensions
 
 import { photometricInterpretations, ExtraSamplesValues } from './globals.js';
-import { fromWhiteIsZero, fromBlackIsZero, fromPalette, fromCMYK, fromYCbCr, fromCIELab } from './rgb.ts';
-import { getDecoder, getDecoderParameters } from './compression/index.js';
+import { fromWhiteIsZero, fromBlackIsZero, fromPalette, fromCMYK, fromYCbCr, fromCIELab } from './rgb.js';
+import { getDecoder } from './compression/index.js';
 import { resample, resampleInterleaved } from './resample.js';
 
 /**
@@ -176,19 +176,21 @@ function normalizeArray(inBuffer, format, planarConfiguration, samplesPerPixel, 
 class GeoTIFFImage {
   /**
    * @constructor
-   * @param {import("./imagefiledirectory.js").ImageFileDirectory} fileDirectory The parsed file directory
+   * @param {Object} fileDirectory The parsed file directory
+   * @param {Object} geoKeys The parsed geo-keys
    * @param {DataView} dataView The DataView for the underlying file.
    * @param {Boolean} littleEndian Whether the file is encoded in little or big endian
    * @param {Boolean} cache Whether or not decoded tiles shall be cached
    * @param {import('./source/basesource').BaseSource} source The datasource to read from
    */
-  constructor(fileDirectory, dataView, littleEndian, cache, source) {
+  constructor(fileDirectory, geoKeys, dataView, littleEndian, cache, source) {
     this.fileDirectory = fileDirectory;
+    this.geoKeys = geoKeys;
     this.dataView = dataView;
     this.littleEndian = littleEndian;
     this.tiles = cache ? {} : null;
-    this.isTiled = !fileDirectory.hasTag('StripOffsets');
-    const planarConfiguration = fileDirectory.getValue('PlanarConfiguration');
+    this.isTiled = !fileDirectory.StripOffsets;
+    const planarConfiguration = fileDirectory.PlanarConfiguration;
     this.planarConfiguration = (typeof planarConfiguration === 'undefined') ? 1 : planarConfiguration;
     if (this.planarConfiguration !== 1 && this.planarConfiguration !== 2) {
       throw new Error('Invalid planar configuration.');
@@ -199,7 +201,7 @@ class GeoTIFFImage {
 
   /**
    * Returns the associated parsed file directory.
-   * @returns {import("./imagefiledirectory.js").ImageFileDirectory} the parsed file directory
+   * @returns {Object} the parsed file directory
    */
   getFileDirectory() {
     return this.fileDirectory;
@@ -210,7 +212,7 @@ class GeoTIFFImage {
    * @returns {Object} the parsed geo keys
    */
   getGeoKeys() {
-    return this.fileDirectory.parseGeoKeyDirectory();
+    return this.geoKeys;
   }
 
   /**
@@ -218,7 +220,7 @@ class GeoTIFFImage {
    * @returns {Number} the width of the image
    */
   getWidth() {
-    return this.fileDirectory.getValue('ImageWidth');
+    return this.fileDirectory.ImageWidth;
   }
 
   /**
@@ -226,7 +228,7 @@ class GeoTIFFImage {
    * @returns {Number} the height of the image
    */
   getHeight() {
-    return this.fileDirectory.getValue('ImageLength');
+    return this.fileDirectory.ImageLength;
   }
 
   /**
@@ -234,8 +236,8 @@ class GeoTIFFImage {
    * @returns {Number} the number of samples per pixel
    */
   getSamplesPerPixel() {
-    return this.fileDirectory.hasTag('SamplesPerPixel')
-      ? this.fileDirectory.getValue('SamplesPerPixel') : 1;
+    return typeof this.fileDirectory.SamplesPerPixel !== 'undefined'
+      ? this.fileDirectory.SamplesPerPixel : 1;
   }
 
   /**
@@ -243,7 +245,7 @@ class GeoTIFFImage {
    * @returns {Number} the width of each tile
    */
   getTileWidth() {
-    return this.isTiled ? this.fileDirectory.getValue('TileWidth') : this.getWidth();
+    return this.isTiled ? this.fileDirectory.TileWidth : this.getWidth();
   }
 
   /**
@@ -252,10 +254,10 @@ class GeoTIFFImage {
    */
   getTileHeight() {
     if (this.isTiled) {
-      return this.fileDirectory.getValue('TileLength');
+      return this.fileDirectory.TileLength;
     }
-    if (this.fileDirectory.hasTag('RowsPerStrip')) {
-      return Math.min(this.fileDirectory.getValue('RowsPerStrip'), this.getHeight());
+    if (typeof this.fileDirectory.RowsPerStrip !== 'undefined') {
+      return Math.min(this.fileDirectory.RowsPerStrip, this.getHeight());
     }
     return this.getHeight();
   }
@@ -279,26 +281,23 @@ class GeoTIFFImage {
    */
   getBytesPerPixel() {
     let bytes = 0;
-
-    // this is a short list, so we assume this is already loaded
-    for (let i = 0; i < this.fileDirectory.getValue('BitsPerSample').length; ++i) {
+    for (let i = 0; i < this.fileDirectory.BitsPerSample.length; ++i) {
       bytes += this.getSampleByteSize(i);
     }
     return bytes;
   }
 
   getSampleByteSize(i) {
-    const bitsPerSample = this.fileDirectory.getValue('BitsPerSample');
-    if (i >= bitsPerSample.length) {
+    if (i >= this.fileDirectory.BitsPerSample.length) {
       throw new RangeError(`Sample index ${i} is out of range.`);
     }
-    return Math.ceil(bitsPerSample[i] / 8);
+    return Math.ceil(this.fileDirectory.BitsPerSample[i] / 8);
   }
 
   getReaderForSample(sampleIndex) {
-    const format = this.fileDirectory.hasTag('SampleFormat')
-      ? this.fileDirectory.getValue('SampleFormat')[sampleIndex] : 1;
-    const bitsPerSample = this.fileDirectory.getValue('BitsPerSample')[sampleIndex];
+    const format = this.fileDirectory.SampleFormat
+      ? this.fileDirectory.SampleFormat[sampleIndex] : 1;
+    const bitsPerSample = this.fileDirectory.BitsPerSample[sampleIndex];
     switch (format) {
       case 1: // unsigned integer data
         if (bitsPerSample <= 8) {
@@ -339,12 +338,12 @@ class GeoTIFFImage {
   }
 
   getSampleFormat(sampleIndex = 0) {
-    return this.fileDirectory.hasTag('SampleFormat')
-      ? this.fileDirectory.getValue('SampleFormat')[sampleIndex] : 1;
+    return this.fileDirectory.SampleFormat
+      ? this.fileDirectory.SampleFormat[sampleIndex] : 1;
   }
 
   getBitsPerSample(sampleIndex = 0) {
-    return this.fileDirectory.getValue('BitsPerSample')[sampleIndex];
+    return this.fileDirectory.BitsPerSample[sampleIndex];
   }
 
   getArrayForSample(sampleIndex, size) {
@@ -377,11 +376,11 @@ class GeoTIFFImage {
     let offset;
     let byteCount;
     if (this.isTiled) {
-      offset = await this.fileDirectory.loadValueIndexed('TileOffsets', index);
-      byteCount = await this.fileDirectory.loadValueIndexed('TileByteCounts', index);
+      offset = this.fileDirectory.TileOffsets[index];
+      byteCount = this.fileDirectory.TileByteCounts[index];
     } else {
-      offset = await this.fileDirectory.loadValueIndexed('StripOffsets', index);
-      byteCount = await this.fileDirectory.loadValueIndexed('StripByteCounts', index);
+      offset = this.fileDirectory.StripOffsets[index];
+      byteCount = this.fileDirectory.StripByteCounts[index];
     }
 
     if (byteCount === 0) {
@@ -399,7 +398,7 @@ class GeoTIFFImage {
     if (tiles === null || !tiles[index]) {
     // resolve each request by potentially applying array normalization
       request = (async () => {
-        let data = await poolOrDecoder.decode(slice);
+        let data = await poolOrDecoder.decode(this.fileDirectory, slice);
         const sampleFormat = this.getSampleFormat();
         const bitsPerSample = this.getBitsPerSample();
         if (needsNormalization(sampleFormat, bitsPerSample)) {
@@ -469,7 +468,7 @@ class GeoTIFFImage {
     const sampleReaders = [];
     for (let i = 0; i < samples.length; ++i) {
       if (this.planarConfiguration === 1) {
-        srcSampleOffsets.push(sum(await this.fileDirectory.loadValue('BitsPerSample'), 0, samples[i]) / 8);
+        srcSampleOffsets.push(sum(this.fileDirectory.BitsPerSample, 0, samples[i]) / 8);
       } else {
         srcSampleOffsets.push(0);
       }
@@ -602,9 +601,9 @@ class GeoTIFFImage {
     }
     let valueArrays;
     if (interleave) {
-      const format = this.fileDirectory.hasTag('SampleFormat')
-        ? Math.max.apply(null, this.fileDirectory.getValue('SampleFormat')) : 1;
-      const bitsPerSample = Math.max.apply(null, this.fileDirectory.getValue('BitsPerSample'));
+      const format = this.fileDirectory.SampleFormat
+        ? Math.max.apply(null, this.fileDirectory.SampleFormat) : 1;
+      const bitsPerSample = Math.max.apply(null, this.fileDirectory.BitsPerSample);
       valueArrays = arrayForType(format, bitsPerSample, numPixels * samples.length);
       if (fillValue) {
         valueArrays.fill(fillValue);
@@ -622,11 +621,7 @@ class GeoTIFFImage {
       }
     }
 
-    const compression = this.fileDirectory.getValue('Compression') || 1;
-    const decoderParameters = await getDecoderParameters(compression, this.fileDirectory);
-    const poolOrDecoder = pool
-      ? pool.bindParameters(compression, decoderParameters)
-      : await getDecoder(compression, decoderParameters);
+    const poolOrDecoder = pool || await getDecoder(this.fileDirectory);
 
     const result = await this._readRaster(
       imageWindow, samples, valueArrays, interleave, poolOrDecoder, width, height, resampleMethod, signal,
@@ -635,7 +630,8 @@ class GeoTIFFImage {
   }
 
   /**
-   * Reads raster data from the image as RGB.
+   * Reads raster data from the image as RGB. The result is always an
+   * interleaved typed array.
    * Colorspaces other than RGB will be transformed to RGB, color maps expanded.
    * When no other method is applicable, the first sample is used to produce a
    * grayscale image.
@@ -666,13 +662,13 @@ class GeoTIFFImage {
       throw new Error('Invalid subsets');
     }
 
-    const pi = this.fileDirectory.getValue('PhotometricInterpretation');
+    const pi = this.fileDirectory.PhotometricInterpretation;
 
     if (pi === photometricInterpretations.RGB) {
       let s = [0, 1, 2];
-      if ((!(this.fileDirectory.getValue('ExtraSamples') === ExtraSamplesValues.Unspecified)) && enableAlpha) {
+      if ((!(this.fileDirectory.ExtraSamples === ExtraSamplesValues.Unspecified)) && enableAlpha) {
         s = [];
-        for (let i = 0; i < this.fileDirectory.getValue('BitsPerSample').length; i += 1) {
+        for (let i = 0; i < this.fileDirectory.BitsPerSample.length; i += 1) {
           s.push(i);
         }
       }
@@ -719,7 +715,7 @@ class GeoTIFFImage {
     const { fileDirectory } = this;
     const raster = await this.readRasters(subOptions);
 
-    const max = 2 ** this.getBitsPerSample(0);
+    const max = 2 ** this.fileDirectory.BitsPerSample[0];
     let data;
     switch (pi) {
       case photometricInterpretations.WhiteIsZero:
@@ -729,7 +725,7 @@ class GeoTIFFImage {
         data = fromBlackIsZero(raster, max);
         break;
       case photometricInterpretations.Palette:
-        data = fromPalette(raster, await fileDirectory.loadValue('ColorMap'));
+        data = fromPalette(raster, fileDirectory.ColorMap);
         break;
       case photometricInterpretations.CMYK:
         data = fromCMYK(raster);
@@ -767,21 +763,20 @@ class GeoTIFFImage {
    * Returns an array of tiepoints.
    * @returns {Object[]}
    */
-  async getTiePoints() {
-    if (!this.fileDirectory.hasTag('ModelTiepoint')) {
+  getTiePoints() {
+    if (!this.fileDirectory.ModelTiepoint) {
       return [];
     }
-    const modelTiePoint = await this.fileDirectory.loadValue('ModelTiepoint');
 
     const tiePoints = [];
-    for (let i = 0; i < modelTiePoint.length; i += 6) {
+    for (let i = 0; i < this.fileDirectory.ModelTiepoint.length; i += 6) {
       tiePoints.push({
-        i: modelTiePoint[i],
-        j: modelTiePoint[i + 1],
-        k: modelTiePoint[i + 2],
-        x: modelTiePoint[i + 3],
-        y: modelTiePoint[i + 4],
-        z: modelTiePoint[i + 5],
+        i: this.fileDirectory.ModelTiepoint[i],
+        j: this.fileDirectory.ModelTiepoint[i + 1],
+        k: this.fileDirectory.ModelTiepoint[i + 2],
+        x: this.fileDirectory.ModelTiepoint[i + 3],
+        y: this.fileDirectory.ModelTiepoint[i + 4],
+        z: this.fileDirectory.ModelTiepoint[i + 5],
       });
     }
     return tiePoints;
@@ -796,12 +791,12 @@ class GeoTIFFImage {
    * @param {number} [sample=null] The sample index.
    * @returns {Object}
    */
-  async getGDALMetadata(sample = null) {
+  getGDALMetadata(sample = null) {
     const metadata = {};
-    if (!this.fileDirectory.hasTag('GDAL_METADATA')) {
+    if (!this.fileDirectory.GDAL_METADATA) {
       return null;
     }
-    const string = await this.fileDirectory.loadValue('GDAL_METADATA');
+    const string = this.fileDirectory.GDAL_METADATA;
 
     let items = findTagsByName(string, 'Item');
 
@@ -823,10 +818,10 @@ class GeoTIFFImage {
    * @returns {number|null}
    */
   getGDALNoData() {
-    if (!this.fileDirectory.hasTag('GDAL_NODATA')) {
+    if (!this.fileDirectory.GDAL_NODATA) {
       return null;
     }
-    const string = this.fileDirectory.getValue('GDAL_NODATA');
+    const string = this.fileDirectory.GDAL_NODATA;
     return Number(string.substring(0, string.length - 1));
   }
 
@@ -836,8 +831,8 @@ class GeoTIFFImage {
    * @returns {Array<number>} The origin as a vector
    */
   getOrigin() {
-    const tiePoints = this.fileDirectory.getValue('ModelTiepoint');
-    const modelTransformation = this.fileDirectory.getValue('ModelTransformation');
+    const tiePoints = this.fileDirectory.ModelTiepoint;
+    const modelTransformation = this.fileDirectory.ModelTransformation;
     if (tiePoints && tiePoints.length === 6) {
       return [
         tiePoints[3],
@@ -864,8 +859,8 @@ class GeoTIFFImage {
    * @returns {Array<number>} The resolution as a vector
    */
   getResolution(referenceImage = null) {
-    const modelPixelScale = this.fileDirectory.getValue('ModelPixelScale');
-    const modelTransformation = this.fileDirectory.getValue('ModelTransformation');
+    const modelPixelScale = this.fileDirectory.ModelPixelScale;
+    const modelTransformation = this.fileDirectory.ModelTransformation;
 
     if (modelPixelScale) {
       return [
@@ -922,9 +917,9 @@ class GeoTIFFImage {
     const height = this.getHeight();
     const width = this.getWidth();
 
-    if (this.fileDirectory.hasTag('ModelTransformation') && !tilegrid) {
+    if (this.fileDirectory.ModelTransformation && !tilegrid) {
       // eslint-disable-next-line no-unused-vars
-      const [a, b, c, d, e, f, g, h] = this.fileDirectory.getValue('ModelTransformation');
+      const [a, b, c, d, e, f, g, h] = this.fileDirectory.ModelTransformation;
 
       const corners = [
         [0, 0],
