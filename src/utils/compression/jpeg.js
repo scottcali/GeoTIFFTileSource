@@ -881,11 +881,11 @@ class JpegStreamReader {
 }
 
 export default class JpegDecoder extends BaseDecoder {
-  constructor(fileDirectory) {
-    super();
+  constructor(parameters) {
+    super(parameters);
     this.reader = new JpegStreamReader();
-    if (fileDirectory.JPEGTables) {
-      this.reader.parse(fileDirectory.JPEGTables);
+    if (parameters.JPEGTables) {
+      this.reader.parse(parameters.JPEGTables);
     }
   }
 
@@ -898,7 +898,7 @@ export default class JpegDecoder extends BaseDecoder {
       if (error.message === 'SOI not found') {
         // Suppress the "SOI not found" error and return a placeholder buffer
         console.warn('Suppressed JPEG decoding error: SOI not found');
-        
+
         // Create a small 1x1 transparent pixel buffer
         // This assumes the expected output is RGBA, which is common for decoded JPEGs
         // 4 bytes per pixel (RGBA)
@@ -909,7 +909,7 @@ export default class JpegDecoder extends BaseDecoder {
         view[1] = 0; // G
         view[2] = 0; // B
         view[3] = 0; // A
-        
+
         return placeholderBuffer;
       }
       // Re-throw any other errors
