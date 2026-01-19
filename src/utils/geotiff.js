@@ -19,7 +19,7 @@ import { ImageFileDirectoryParser } from './imagefiledirectory.js';
 import { fieldTypes, getFieldTypeSize } from './globals.js';
 import { writeGeotiff } from './geotiffwriter.js';
 import * as globals from './globals.js';
-import * as rgb from './rgb.js';
+import * as rgb from './rgb.ts';
 import { getDecoder, addDecoder } from './compression/index.js';
 import { setLogger } from './logging.js';
 

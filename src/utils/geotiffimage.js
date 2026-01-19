@@ -4,7 +4,7 @@ import getAttribute from 'xml-utils/get-attribute'; // eslint-disable-line impor
 import findTagsByName from 'xml-utils/find-tags-by-name'; // eslint-disable-line import/extensions
 
 import { photometricInterpretations, ExtraSamplesValues } from './globals.js';
-import { fromWhiteIsZero, fromBlackIsZero, fromPalette, fromCMYK, fromYCbCr, fromCIELab } from './rgb.js';
+import { fromWhiteIsZero, fromBlackIsZero, fromPalette, fromCMYK, fromYCbCr, fromCIELab } from './rgb.ts';
 import { getDecoder, getDecoderParameters } from './compression/index.js';
 import { resample, resampleInterleaved } from './resample.js';
 
