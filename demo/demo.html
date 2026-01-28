@@ -1,44 +1,44 @@
 <head>
     <title>GeoTIFFTileSource Demo</title>
-	
-	<!--
-		"fs": "https://cdn.jsdelivr.net/npm/browserify-fs/+esm",
-		"xml-utils/get-attribute": "https://esm.sh/xml-utils/get-attribute",
-		"xml-utils/find-tags-by-name": "https://esm.sh/xml-utils/find-tags-by-name",
-	-->
-	<script type="importmap">
-	{
-	  "imports": {
-		"@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
-		
-		"web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
-		"quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
-		"zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
-		"pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
-		"lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
+    
+    <!--
+        "fs": "https://cdn.jsdelivr.net/npm/browserify-fs/+esm",
+        "xml-utils/get-attribute": "https://esm.sh/xml-utils/get-attribute",
+        "xml-utils/find-tags-by-name": "https://esm.sh/xml-utils/find-tags-by-name",
+    -->
+    <script type="importmap">
+    {
+      "imports": {
+        "@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
+        
+        "web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
+        "quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
+        "zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
+        "pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
+        "lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
 
-		"http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
-		"https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
-		"url": "https://cdn.jsdelivr.net/npm/url/+esm",
-		
-		"xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
-		"xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
-		"xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.js",
-		"xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.js",
-		"xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
-		"xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
-			
-		"fs": "data:text/javascript,export default {}",
-		"path": "https://cdn.jsdelivr.net/npm/path-browserify/+esm",
-		"buffer": "https://cdn.jsdelivr.net/npm/buffer/+esm",
-		"process": "https://cdn.jsdelivr.net/npm/process/+esm"
-	  }
-	}
-	</script>
+        "http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
+        "https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
+        "url": "https://cdn.jsdelivr.net/npm/url/+esm",
+        
+        "xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
+        "xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
+        "xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.js",
+        "xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
+        "xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
+        "xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
+            
+        "fs": "data:text/javascript,export default {}",
+        "path": "https://cdn.jsdelivr.net/npm/path-browserify/+esm",
+        "buffer": "https://cdn.jsdelivr.net/npm/buffer/+esm",
+        "process": "https://cdn.jsdelivr.net/npm/process/+esm"
+      }
+    }
+    </script>
 
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"></script> -->
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js"></script> -->
- 
+
     <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
     <!-- <script type="text/javascript" src="../dist/geotiff.js"></script> -->
     <script type="text/javascript" src="../dist/openseadragon-bin-4.1.0/openseadragon.js"></script> 
@@ -46,10 +46,9 @@
   </script>
 
 
-    <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
-    <!-- <script type="module" src="../dist/geotiff-tilesource.mjs"></script> -->
-    <!-- <script type="module" src="../src/main.js"></script> -->
-    <!-- <script type="module" src="./demo.js"></script> -->
+  <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
+  <!-- <script type="module" src="../dist/geotiff-tilesource.mjs"></script> -->
+  <!-- <script type="module" src="./demo.js"></script> -->
 
   <!-- -------------------------------------------------
        1️⃣ Bootstrap module – imports the three libraries,
@@ -63,7 +62,7 @@
     //    UMD wrapper you used before.  It respects the import‑map above.
     //import * as GeoTIFF from '../dist/geotiff.js';
 
-    // 3️⃣ Tile‑source – import the **source** (not the minified bundle)
+    // 3️⃣ Tile‑source – import the *source* (not the minified bundle)
     //    This file re‑exports the class and does NOT register itself
     //    automatically; we do the registration manually.
     //import { GeoTIFFTileSource } from '../src/GeoTIFFTileSource.js';
@@ -77,7 +76,7 @@
     //       The OpenSeadragon script from step 2 already put the class on
     //       window.OpenSeadragon, so we just need to call the helper.
     enableGeoTIFFTileSource(window.OpenSeadragon);
-	
+    
     // -------------------------------------------------
     // 4️⃣ Create the globals that the *original* demo.js expects
     // -------------------------------------------------
@@ -92,7 +91,7 @@
     import './demo.js';
   </script>
   
-	<link rel="stylesheet" href="./demo.css">
+    <link rel="stylesheet" href="./demo.css">
  </head>
  <body>
      <div class="content">
@@ -133,7 +132,6 @@
                             <p><button class="demo-link" data-href="https://oin-hotosm.s3.amazonaws.com/5a13582931eff4000c38060d/0/9c75cb72-e13a-4862-abe4-62058d5e108c.tif">Drone photos</button> from <a href="https://map.openaerialmap.org/#/-122.39500164985655,47.66504775985181,16/square/021230021/5a135953bac48e5b1c24c537">OpenAerialMap</a></p>
                         </li>
                     </ul>
-
                 </li>
             </ul>
 

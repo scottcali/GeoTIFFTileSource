@@ -1,0 +1,5 @@
+multifile-Z1.ome.tiff
+multifile-Z2.ome.tiff
+multifile-Z3.ome.tiff
+multifile-Z4.ome.tiff
+multifile-Z5.ome.tiff

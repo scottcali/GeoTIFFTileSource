@@ -5,7 +5,7 @@
  *
  */
 
-console.log("Loading GeoTIFF Tile Source from 2026.01.07  ..."); 
+console.log("Loading GeoTIFF Tile Source from 2026.01.24  ..."); 
 
 
 import { fromBlob, fromUrl, globals, Pool } from "./utils/geotiff.js";
@@ -20,8 +20,9 @@ import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 //import './utils/compression/deflate.js';
 //import './utils/compression/packbits.js';
 
+
 /**
- *  GeoTIFF Tile Source	2026.01.18 
+ *  GeoTIFF Tile Source 2026.01.18 
  *  Adding new GeoTiff,js 2026.01.18 Version 3.0.0-beta.3
  *
  * Enable GeoTIFF Tile Source for OpenSeadragon.
@@ -34,6 +35,19 @@ import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 export const enableGeoTIFFTileSource = (OpenSeadragon) => {
 
   let tsCounter = 0;
+
+  let enableDebug = true;  
+
+  /**
+   * Internal debug logger – only prints when `enableDebug` is true.
+   *
+   * @param  {...any} args
+   */
+	const consolelog = (...args) => {
+		if (enableDebug) console.log('[GTTileSrc]', ...args);
+	};
+  
+  
   /**
    * @class GeoTIFFTileSource
    * @memberof OpenSeadragon
@@ -42,7 +56,7 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
    * @param {Object} opts Options object. To do: how to document options fields?
    *                 opts.logLatency: print latency to fetch and process each tile to console.log or the provided function
    *                 opts.tileWidth: tileWidth to request at each level. Defaults to tileWidth specified by TIFF file or 256 if unspecified by the file
-   *                 opts.tileHeight:tileWidth to request at each level. Defaults to tileWidth specified by TIFF file or 256 if unspecified by the file
+   *                 opts.tileHeight:tileWidth to request at each level. Defaults to tileWidth specified by TIFF file or 256 if unspecified
    *
    * @property {Object} GeoTIFF The GeoTIFF.js representation of the underlying file. Undefined until the file is opened successfully
    * @property {Array}  GeoTIFFImages Array of GeoTIFFImage objects, each representing one layer. Undefined until the file is opened successfully
@@ -70,6 +84,10 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
     constructor(input, opts = { logLatency: false }) {
       super();
 
+     consolelog('--- GeoTIFFTileSource start ---');
+     consolelog('input:', input);
+     consolelog('In constructor, options:', opts);
+
       if (!GeoTIFFTileSource._osdReady) {
         GeoTIFFTileSource.applyOSDPatch(OpenSeadragon);
       }
@@ -78,6 +96,14 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
 
       this.input = input;
       this.options = opts;
+
+	  this.GeoTiffSet = opts.GeoTiffSet;
+	  this.ImageArray = opts.ImageArray;
+      this.CurrentZ   = opts.CurrentZ;
+	  this.MaxZ       = opts.MaxZ; 
+	  this.MinZ       = opts.MinZ; 
+
+
       this.channel = input?.channel ?? null;
 
       this._ready = false;
@@ -140,101 +166,233 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
         input instanceof File ? input.name.split(".").pop() : input.split(".").pop();
 
       let tiff = input instanceof File ? fromBlob(input) : fromUrl(input);
-
-      return tiff
-        .then((t) => {
-          tiff = t;
-          return t.getImageCount();
-        })
-        .then((c) =>
-          Promise.all([...Array(c).keys()].map(async (index) => (await tiff).getImage(index)))
-        )
-        .then((images) => {
-          // Filter out images with photometricInterpretation.TransparencyMask
-          images = images.filter(
-            (image) =>
-              image.fileDirectory.photometricInterpretation !==
-              globals.photometricInterpretations.TransparencyMask
-          );
-
-          // Sort by width (largest first), then detect pyramids
-          images.sort((a, b) => b.getWidth() - a.getWidth());
-
-          // find unique aspect ratios (with tolerance to account for rounding)
-          const tolerance = 0.015;
-
-          // Organize images into sets based on aspect ratio as well as
-          // macro thumbnails and labels according to the Aperio SVS format:
-          //   https://web.archive.org/web/20120420105738/http://www.aperio.com/documents/api/Aperio_Digital_Slides_and_Third-party_data_interchange.pdf (pg 14)
-          const aspectRatioSets = images.reduce((accumulator, image) => {
-            const r = image.getWidth() / image.getHeight();
-            let s = ""; // Initialize with no description
-
-            // Check whether the ImageDescription exists as a field just in case
-            if (image.fileDirectory.ImageDescription){
-              // Split out part of the description that signifies its type for identification
-              s = image.fileDirectory.ImageDescription.split("\n")[1] ?? "";
-            }
+      
+      let GeoTiffSetLocal =  opts.GeoTiffSet;
+  
+     consolelog('In getAllTileSources, options:', opts);
+  
+      // --------------------------------------------------------------
+      // detailed with different file formats
+      // --------------------------------------------------------------
+      try {
+          
+        if (GeoTiffSetLocal == true) {
             
-            const exists = accumulator.filter(
-              (set) => ((Math.abs(1 - set.aspectRatio / r) < tolerance)
-                && !(s?.includes("macro") || s?.includes("label"))) // Separate out macro thumbnails and labels
-            );
-            if (exists.length === 0) {
-              let set = {
-                aspectRatio: r,
-                images: [image],
-              };
-              accumulator.push(set);
-            } else {
-              exists[0].images.push(image);
-            }
-            return accumulator;
-          }, []);
+          // --------------------------------------------------------------
+          //  GEO‑TIFF-SET (with Z‑stack)
+          // --------------------------------------------------------------
+          consolelog("It is GEO‑TIFF-SET (with Z‑stack) ..."); 
 
-          const imageSets = aspectRatioSets.map((set) => set.images);
-
-          return imageSets.map((images, index) => {
-            // Check if QPTIFF
-            if (index !== 0) {
-              return new OpenSeadragon.GeoTIFFTileSource(
-                {
-                  GeoTIFF: tiff,
-                  GeoTIFFImages: images,
-                },
-                opts
+          return tiff
+            .then((t) => {
+              tiff = t;
+              return t.getImageCount();
+            })
+            .then((c) =>
+              Promise.all([...Array(c).keys()].map(async (index) => (await tiff).getImage(index)))
+            )
+            .then((images) => {
+              // Filter out images with photometricInterpretation.TransparencyMask
+              images = images.filter(
+                (image) =>
+                  image.fileDirectory.photometricInterpretation !==
+                  globals.photometricInterpretations.TransparencyMask
               );
-            }
 
-            switch (fileExtension) {
-              case "qptiff":
-                const channels = parsePerkinElmerChannels(images);
-                return Array.from(channels.values()).map((channel, index) => {
+              // Sort by width (largest first), then detect pyramids
+              images.sort((a, b) => b.getWidth() - a.getWidth());
+
+              // find unique aspect ratios (with tolerance to account for rounding)
+              const tolerance = 0.015;
+
+              // Organize images into sets based on aspect ratio as well as
+              // macro thumbnails and labels according to the Aperio SVS format:
+              //   https://web.archive.org/web/20120420105738/http://www.aperio.com/documents/api/Aperio_Digital_Slides_and_Third-party_data_interchange.pdf (pg 14)
+              const aspectRatioSets = images.reduce((accumulator, image) => {
+                const r = image.getWidth() / image.getHeight();
+                let s = ""; // Initialize with no description
+
+                // Check whether the ImageDescription exists as a field just in case
+                if (image.fileDirectory.ImageDescription){
+                  // Split out part of the description that signifies its type for identification
+                  s = image.fileDirectory.ImageDescription.split("\n")[1] ?? "";
+                }
+                
+                const exists = accumulator.filter(
+                  (set) => ((Math.abs(1 - set.aspectRatio / r) < tolerance)
+                    && !(s?.includes("macro") || s?.includes("label"))) // Separate out macro thumbnails and labels
+                );
+                if (exists.length === 0) {
+                  let set = {
+                    aspectRatio: r,
+                    images: [image],
+                  };
+                  accumulator.push(set);
+                } else {
+                  exists[0].images.push(image);
+                }
+                return accumulator;
+              }, []);
+
+              const imageSets = aspectRatioSets.map((set) => set.images);
+
+              return imageSets.map((images, index) => {
+                // Check if QPTIFF
+                if (index !== 0) {
                   return new OpenSeadragon.GeoTIFFTileSource(
                     {
                       GeoTIFF: tiff,
-                      GeoTIFFImages: channel.images,
-                      channel: {
-                        name: channel.name,
-                        color: channel.color,
-                      },
+                      GeoTIFFImages: images,
                     },
                     opts
                   );
-                });
+                }
 
-              default:
-                return new OpenSeadragon.GeoTIFFTileSource(
-                  {
-                    GeoTIFF: tiff,
-                    GeoTIFFImages: images,
-                  },
-                  opts
+                switch (fileExtension) {
+                  case "qptiff":
+                    const channels = parsePerkinElmerChannels(images);
+                    return Array.from(channels.values()).map((channel, index) => {
+                      return new OpenSeadragon.GeoTIFFTileSource(
+                        {
+                          GeoTIFF: tiff,
+                          GeoTIFFImages: channel.images,
+                          channel: {
+                            name: channel.name,
+                            color: channel.color,
+                          },
+                        },
+                        opts
+                      );
+                    });
+
+                  default:
+                    return new OpenSeadragon.GeoTIFFTileSource(
+                      {
+                        GeoTIFF: tiff,
+                        GeoTIFFImages: images,
+                      },
+                      opts
+                    );
+                }
+              });
+            });
+
+        }////GEO‑TIFF-SET (with Z‑stack)
+
+        //GEO-TIFF or SVS
+        else{
+
+          // --------------------------------------------------------------
+          //  SVS / GEO‑TIFF (without Z‑stack)
+          // --------------------------------------------------------------
+          consolelog("It is svs or GEO-Tiff  ..."); 
+
+          return tiff
+            .then((t) => {
+              tiff = t;
+              return t.getImageCount();
+            })
+            .then((c) =>
+              Promise.all([...Array(c).keys()].map(async (index) => (await tiff).getImage(index)))
+            )
+            .then((images) => {
+              // Filter out images with photometricInterpretation.TransparencyMask
+              images = images.filter(
+                (image) =>
+                  image.fileDirectory.photometricInterpretation !==
+                  globals.photometricInterpretations.TransparencyMask
+              );
+
+              // Sort by width (largest first), then detect pyramids
+              images.sort((a, b) => b.getWidth() - a.getWidth());
+
+              // find unique aspect ratios (with tolerance to account for rounding)
+              const tolerance = 0.015;
+
+              // Organize images into sets based on aspect ratio as well as
+              // macro thumbnails and labels according to the Aperio SVS format:
+              //   https://web.archive.org/web/20120420105738/http://www.aperio.com/documents/api/Aperio_Digital_Slides_and_Third-party_data_interchange.pdf (pg 14)
+              const aspectRatioSets = images.reduce((accumulator, image) => {
+                const r = image.getWidth() / image.getHeight();
+                let s = ""; // Initialize with no description
+
+                // Check whether the ImageDescription exists as a field just in case
+                if (image.fileDirectory.ImageDescription){
+                  // Split out part of the description that signifies its type for identification
+                  s = image.fileDirectory.ImageDescription.split("\n")[1] ?? "";
+                }
+                
+                const exists = accumulator.filter(
+                  (set) => ((Math.abs(1 - set.aspectRatio / r) < tolerance)
+                    && !(s?.includes("macro") || s?.includes("label"))) // Separate out macro thumbnails and labels
                 );
-            }
-          });
-        });
+                if (exists.length === 0) {
+                  let set = {
+                    aspectRatio: r,
+                    images: [image],
+                  };
+                  accumulator.push(set);
+                } else {
+                  exists[0].images.push(image);
+                }
+                return accumulator;
+              }, []);
+
+              const imageSets = aspectRatioSets.map((set) => set.images);
+
+              return imageSets.map((images, index) => {
+                // Check if QPTIFF
+                if (index !== 0) {
+                  return new OpenSeadragon.GeoTIFFTileSource(
+                    {
+                      GeoTIFF: tiff,
+                      GeoTIFFImages: images,
+                    },
+                    opts
+                  );
+                }
+
+                switch (fileExtension) {
+                  case "qptiff":
+                    const channels = parsePerkinElmerChannels(images);
+                    return Array.from(channels.values()).map((channel, index) => {
+                      return new OpenSeadragon.GeoTIFFTileSource(
+                        {
+                          GeoTIFF: tiff,
+                          GeoTIFFImages: channel.images,
+                          channel: {
+                            name: channel.name,
+                            color: channel.color,
+                          },
+                        },
+                        opts
+                      );
+                    });
+
+                  default:
+                    return new OpenSeadragon.GeoTIFFTileSource(
+                      {
+                        GeoTIFF: tiff,
+                        GeoTIFFImages: images,
+                      },
+                      opts
+                    );
+                }
+              });
+            });
+      
+        }////GEO-TIFF or SVS
+        
+      } catch (e) {
+          console.error(e);
+		  
+      }///// deal with different file formats  
+
+      return null;
+	  
     };
+
+
 
     /**
      * Return the tileWidth for a given level.
@@ -548,6 +706,7 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
       }
     };
   }
+
 
   // Attach the class to the OpenSeadragon namespace
   OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
