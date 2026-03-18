@@ -5,33 +5,105 @@
         "fs": "https://cdn.jsdelivr.net/npm/browserify-fs/+esm",
         "xml-utils/get-attribute": "https://esm.sh/xml-utils/get-attribute",
         "xml-utils/find-tags-by-name": "https://esm.sh/xml-utils/find-tags-by-name",
-    -->
-    <script type="importmap">
-    {
-      "imports": {
-        "@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
-        
-        "web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
-        "quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
-        "zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
-        "pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
-        "lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
 
-        "http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
-        "https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
-        "url": "https://cdn.jsdelivr.net/npm/url/+esm",
-        
-        "xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
-        "xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
-        "xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.js",
-        "xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
-        "xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
-        "xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
-            
+        /* OpenSeadragon – ES‑module build */
+		"openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/+esm",
+        "geotiff": "https://cdn.jsdelivr.net/npm/geotiff@2.1.3/+esm",
         "fs": "data:text/javascript,export default {}",
         "path": "https://cdn.jsdelivr.net/npm/path-browserify/+esm",
         "buffer": "https://cdn.jsdelivr.net/npm/buffer/+esm",
         "process": "https://cdn.jsdelivr.net/npm/process/+esm"
+
+    "imports": {
+      "openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/+esm",
+      "geotiff":           "https://cdn.jsdelivr.net/npm/geotiff@2.1.3/+esm",
+      "buffer":            "https://cdn.jsdelivr.net/npm/buffer/+esm",
+      "path":              "https://cdn.jsdelivr.net/npm/path-browserify/+esm",
+      "encoder":           "https://cdn.jsdelivr.net/npm/encoder/+esm",
+      "node:buffer":       "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/buffer.js",
+      "node:process":      "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/process.js",
+      "node:fs":           "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/fs.js",
+      "node:path":          "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/path.js",
+      "fs":                "data:text/javascript,export default {}",
+      "@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
+      "web-worker":        "https://cdn.jsdelivr.net/npm/web-worker/+esm",
+      "quick-lru":         "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
+      "zstddec":            "https://cdn.jsdelivr.net/npm/zstddec/+esm",
+      "pako":               "https://cdn.jsdelivr.net/npm/pako/+esm",
+      "lerc":               "https://cdn.jsdelivr.net/npm/lerc/+esm",
+      "http":               "https://cdn.jsdelivr.net/npm/stream-http/+esm",
+      "https":              "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
+      "url":                "https://cdn.jsdelivr.net/npm/url/+esm",
+      "xml-utils/find-tag-by-name": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
+      "xml-utils/get-attribute":   "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.js",
+      "xml-utils/find-tags-by-name": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs"
+
+		"numcodecs/zstd": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/zstd.js",
+
+		"openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/+esm",	
+	<script type="importmap">
+	{
+	  "imports": {
+		"openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/+esm",
+		"@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
+		"web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
+		"quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
+		"zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
+		"zstddec/stream": "https://cdn.jsdelivr.net/npm/zstddec/stream/+esm",
+		"pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
+		"lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
+		"http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
+		"https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
+		"url": "https://cdn.jsdelivr.net/npm/url/+esm",
+		"xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
+		"xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
+		"xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
+		"xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
+		"numcodecs/": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/",
+		"fflate": "https://cdn.jsdelivr.net/npm/fflate/+esm",
+		"node:buffer": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/buffer.js",
+		"node:fs": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/fs.js",
+		"node:path": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/path.js",
+		"node:process": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/process.js",
+		"fs": "data:text/javascript,export default {}"
+	  }
+	}
+	</script>
+
+		"openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/+esm",		
+    -->
+    <script type="importmap">
+    {
+	  "imports": {
+
+		"openseadragon": "https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/+esm",		
+		"@petamoriken/float16": "https://cdn.jsdelivr.net/npm/@petamoriken/float16/browser/float16.mjs",
+		"web-worker": "https://cdn.jsdelivr.net/npm/web-worker/+esm",
+		"quick-lru": "https://cdn.jsdelivr.net/npm/quick-lru/+esm",
+		"zstddec": "https://cdn.jsdelivr.net/npm/zstddec/+esm",
+		"zstddec/stream": "https://cdn.jsdelivr.net/npm/zstddec/stream/+esm",
+		"pako": "https://cdn.jsdelivr.net/npm/pako/+esm",
+		"lerc": "https://cdn.jsdelivr.net/npm/lerc/+esm",
+		"http": "https://cdn.jsdelivr.net/npm/stream-http/+esm",
+		"https": "https://cdn.jsdelivr.net/npm/https-browserify/+esm",
+		"url": "https://cdn.jsdelivr.net/npm/url/+esm",
+		"xml-utils/": "https://cdn.jsdelivr.net/npm/xml-utils/",
+		"xml-utils/find-tag-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tag-by-name.mjs",
+		"xml-utils/get-attribute.js": "https://cdn.jsdelivr.net/npm/xml-utils/get-attribute.mjs",
+		"xml-utils/find-tags-by-name.js": "https://cdn.jsdelivr.net/npm/xml-utils/find-tags-by-name.mjs",
+		"numcodecs/": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/",
+		"numcodecs/zstd.js": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/zstd.js",
+		"numcodecs/blosc.js": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/blosc.js",
+		"numcodecs/gzip.js": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/gzip.js",
+		"numcodecs/zlib.js": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/zlib.js",
+		"numcodecs/lz4.js": "https://cdn.jsdelivr.net/npm/numcodecs@0.3.2/dist/lz4.js",
+		"fflate": "https://cdn.jsdelivr.net/npm/fflate/+esm",
+		"node:buffer": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/buffer.js",
+		"node:fs": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/fs.js",
+		"node:path": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/path.js",
+		"node:process": "https://ga.jspm.io/npm:@jspm/core@2.1.0/nodelibs/browser/process.js",
+		"fs": "data:text/javascript,export default {}"
+			
       }
     }
     </script>
@@ -41,9 +113,21 @@
 
     <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
     <!-- <script type="text/javascript" src="../dist/geotiff.js"></script> -->
-    <script type="text/javascript" src="../dist/openseadragon-bin-4.1.0/openseadragon.js"></script> 
+    <!--<script type="text/javascript" src="../dist/openseadragon-bin-4.1.0/openseadragon.js"></script>--> 
 
+    <!--<script type="text/javascript" src="/dist/openseadragon-bin-4.1.0/openseadragon.js">--> 
+	
+	
   </script>
+
+	<script>
+	// Add this before your module script to monitor network requests
+	const originalFetch = window.fetch;
+	window.fetch = function(...args) {
+	  console.log('Fetching:', args[0]);
+	  return originalFetch.apply(this, args);
+	};
+	</script>
 
 
   <!-- <script type="text/javascript" src="../dist/geotiff-tilesource.min.js"></script> -->
@@ -55,6 +139,20 @@
           creates the globals, and finally loads your demo.
        ------------------------------------------------- -->
   <script type="module">
+	  // ---------------------------------------------------------
+	  //  0️⃣ Load the codec side‑effects and initialise ZSTD (once)
+	  // ---------------------------------------------------------
+	  import { codecBootstrapReady } from "../src/OmeNgffOzxTileSource/codec-bootstrap.js";
+	  await codecBootstrapReady;               // <-- top‑level await
+  
+    // 1️⃣ Import the two core libraries as ES modules
+    import OpenSeadragon from 'openseadragon';
+
+	  // 1️⃣ Import OpenSeadragon from your local build
+	  // Use a relative path since it's not in the import map
+	  //import OpenSeadragon from '../dist/openseadragon-bin-4.1.0/openseadragon.js';
+
+	
     // 1️⃣ OpenSeadragon – ES‑module build (the same file you used before)
     //import OpenSeadragon from '../dist/openseadragon-bin-4.1.0/openseadragon.js';
 
@@ -75,8 +173,9 @@
     // 3.3️⃣ Register the plugin on the global OpenSeadragon object.
     //       The OpenSeadragon script from step 2 already put the class on
     //       window.OpenSeadragon, so we just need to call the helper.
-    enableGeoTIFFTileSource(window.OpenSeadragon);
-    
+    //enableGeoTIFFTileSource(window.OpenSeadragon);
+    // 4️⃣ Tell the plugin to attach itself to OpenSeadragon
+    enableGeoTIFFTileSource(OpenSeadragon);    
     // -------------------------------------------------
     // 4️⃣ Create the globals that the *original* demo.js expects
     // -------------------------------------------------
@@ -87,6 +186,8 @@
     // caused the “undefined getAllTileSources” error.
     //OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
 
+
+	
     // 5️⃣ Finally import the demo logic (unchanged)
     import './demo.js';
   </script>

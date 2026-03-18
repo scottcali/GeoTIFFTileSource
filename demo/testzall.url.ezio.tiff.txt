@@ -1,3 +1,0 @@
-https://localhost:8080/GeoTIFFTileSource/demo/testz01.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/testz02.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/testz03.tiff

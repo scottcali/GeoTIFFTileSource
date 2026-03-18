@@ -1,5 +1,0 @@
-https://localhost:8080/GeoTIFFTileSource/demo/multifile-Z1.ome.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/multifile-Z2.ome.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/multifile-Z3.ome.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/multifile-Z4.ome.tiff
-https://localhost:8080/GeoTIFFTileSource/demo/multifile-Z5.ome.tiff

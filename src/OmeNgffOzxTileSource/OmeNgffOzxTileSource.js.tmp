@@ -1,0 +1,119 @@
+  /**
+   * Helper to finish a tile request with a transparent 1x1 pixel image.
+   * This is better than finishing with null because some hooks treat
+   * null as a load failure.
+   */
+  _finishWithEmptyTile(context) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const dataUrl = canvas.toDataURL();
+    const img = new Image();
+    img.onload = () => context.finish(img, OmeNgffOzxTileSource.DUMMY_XHR, "");
+    img.src = dataUrl;
+  }
+
+  downloadTileStart(context) {
+    const abortController = new AbortController();
+    context.userData.abortController = abortController;
+
+    const params = new URLSearchParams(context.src);
+    let level = Number(params.get("level"));
+
+    if (level < 0 || level > this.maxLevel) {
+      level = Math.max(0, Math.min(level, this.maxLevel));
+    }
+
+    this.CurrentLevel = level;
+    const tileWidth = this.getTileWidth(level);
+    const tileHeight = this.getTileHeight(level);
+    let x = Number(params.get("x"));
+    let y = Number(params.get("y"));
+
+    if (x < 0 || y < 0) {
+      this._finishWithEmptyTile(context);
+      return;
+    }
+
+    const cacheKey = `${level},${x},${y},${this.z ?? 0},${this.c ?? 0},${this.t ?? 0}`;
+
+    // ---- 1. Try to serve from cache ----
+    if (this._tileCache.has(cacheKey)) {
+      const dataUrl = this._tileCache.get(cacheKey);
+      const img = new Image();
+      img.onload = () => context.finish(img, OmeNgffOzxTileSource.DUMMY_XHR, "");
+      img.src = dataUrl;
+      return;
+    }
+
+    // ---- 2. Build tile from scratch ----
+    try {
+      if (!this._multiscale || !this._axisIndices || !this._arrays) {
+        throw new Error("tile source not ready");
+      }
+
+      const arrayIndex = this.maxLevel - level;
+      if (arrayIndex < 0 || arrayIndex >= this._arrays.length) {
+        this._finishWithEmptyTile(context);
+        return;
+      }
+
+      const array = this._arrays[arrayIndex];
+      if (!this._validateIndices(array)) {
+        this._finishWithEmptyTile(context);
+        return;
+      }
+
+      const maxTileWidth = array.shape[this._axisIndices.x];
+      const maxTileHeight = array.shape[this._axisIndices.y];
+      const startX = x * tileWidth;
+      const startY = y * tileHeight;
+
+      if (startX >= maxTileWidth || startY >= maxTileHeight) {
+        this._finishWithEmptyTile(context);
+        return;
+      }
+
+      const endX = Math.min(startX + tileWidth, maxTileWidth);
+      const endY = Math.min(startY + tileHeight, maxTileHeight);
+
+      if (endX <= startX || endY <= startY) {
+        this._finishWithEmptyTile(context);
+        return;
+      }
+
+      // ---- Render the tile ----
+      renderImage(array, this._multiscale.axes, this._omero, {
+        x: [startX, endX],
+        y: [startY, endY],
+        z: this.z,
+        c: this.c,
+        t: this.t,
+      })
+        .then(async (dataUrl) => {
+          abortController.signal.throwIfAborted();
+
+          if (!dataUrl || !dataUrl.startsWith("data:image/")) {
+            this._finishWithEmptyTile(context);
+            return;
+          }
+
+          this._tileCache.set(cacheKey, dataUrl);
+          this._maintainTileCacheSize();
+
+          const img = new Image();
+          img.onload = () => context.finish(img, OmeNgffOzxTileSource.DUMMY_XHR, "");
+          img.onerror = () => this._finishWithEmptyTile(context);
+          img.src = dataUrl;
+        })
+        .catch((err) => {
+          if (!abortController.signal.aborted) {
+            console.error(`Render error for tile ${cacheKey}:`, err);
+            this._finishWithEmptyTile(context);
+          }
+        });
+    } catch (error) {
+      console.error(`Failed to download tile ${cacheKey}:`, error);
+      this._finishWithEmptyTile(context);
+    }
+  }

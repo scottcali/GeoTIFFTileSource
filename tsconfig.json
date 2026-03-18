@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "lib": ["ES2020", "DOM"],
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "skipLibCheck": true,
     "allowJs": true,
     "declaration": true,
     "declarationMap": true,
@@ -14,8 +18,26 @@
     "esModuleInterop": false,
     "inlineSources": false,
     "downlevelIteration": true
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
-    "./src/**/*.js"
+    "./src/**/*.js",
+    "vite.config.ts", 
+    "src"    
   ]
 }

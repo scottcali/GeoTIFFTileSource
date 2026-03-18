@@ -1,12 +1,11 @@
 /**
- * GeoTIFF Tile Source 2026.01.07 
+ * GeoTIFF Tile Source 2026.01.07
  * Adding new GeoTiff,js 2026.01.07 Version 2.1.4-beta.1
  * to Fix the issue
  *
  */
 
-console.log("Loading GeoTIFF Tile Source from 2026.01.24  ..."); 
-
+console.log("Loading GeoTIFF Tile Source from 2026.01.24  ...");
 
 import { fromBlob, fromUrl, globals, Pool } from "./utils/geotiff.js";
 import { DeferredPromise } from "./utils/DeferredPromise.js";
@@ -20,9 +19,12 @@ import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
 //import './utils/compression/deflate.js';
 //import './utils/compression/packbits.js';
 
+import { OmeNgffOzxTileSource } from "./OmeNgffOzxTileSource/OmeNgffOzxTileSource.js";
+
+//import { Blosc, GZip, Zlib, LZ4, Zstd } from './OmeNgffOzxTileSource/numcodecs/index.js';
 
 /**
- *  GeoTIFF Tile Source 2026.01.18 
+ *  GeoTIFF Tile Source 2026.01.18
  *  Adding new GeoTiff,js 2026.01.18 Version 3.0.0-beta.3
  *
  * Enable GeoTIFF Tile Source for OpenSeadragon.
@@ -33,21 +35,19 @@ import { patchOSDImageJob } from "./utils/osdMonkeyPatch.js";
  * @param {OpenSeadragon} OpenSeadragon - The OpenSeadragon class.
  */
 export const enableGeoTIFFTileSource = (OpenSeadragon) => {
-
   let tsCounter = 0;
 
-  let enableDebug = true;  
+  let enableDebug = true;
 
   /**
    * Internal debug logger – only prints when `enableDebug` is true.
    *
    * @param  {...any} args
    */
-	const consolelog = (...args) => {
-		if (enableDebug) console.log('[GTTileSrc]', ...args);
-	};
-  
-  
+  const consolelog = (...args) => {
+    if (enableDebug) console.log("[GTTileSrc]", ...args);
+  };
+
   /**
    * @class GeoTIFFTileSource
    * @memberof OpenSeadragon
@@ -84,9 +84,9 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
     constructor(input, opts = { logLatency: false }) {
       super();
 
-     consolelog('--- GeoTIFFTileSource start ---');
-     consolelog('input:', input);
-     consolelog('In constructor, options:', opts);
+      consolelog("--- GeoTIFFTileSource start ---");
+      consolelog("input:", input);
+      consolelog("In constructor, options:", opts);
 
       if (!GeoTIFFTileSource._osdReady) {
         GeoTIFFTileSource.applyOSDPatch(OpenSeadragon);
@@ -97,12 +97,11 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
       this.input = input;
       this.options = opts;
 
-	  this.GeoTiffSet = opts.GeoTiffSet;
-	  this.ImageArray = opts.ImageArray;
-      this.CurrentZ   = opts.CurrentZ;
-	  this.MaxZ       = opts.MaxZ; 
-	  this.MinZ       = opts.MinZ; 
-
+      this.GeoTiffSet = opts.GeoTiffSet;
+      this.ImageArray = opts.ImageArray;
+      this.CurrentZ = opts.CurrentZ;
+      this.MaxZ = opts.MaxZ;
+      this.MinZ = opts.MinZ;
 
       this.channel = input?.channel ?? null;
 
@@ -165,23 +164,67 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
       const fileExtension =
         input instanceof File ? input.name.split(".").pop() : input.split(".").pop();
 
-      let tiff = input instanceof File ? fromBlob(input) : fromUrl(input);
-      
-      let GeoTiffSetLocal =  opts.GeoTiffSet;
-  
-     consolelog('In getAllTileSources, options:', opts);
-  
+      //let tiff = input instanceof File ? fromBlob(input) : fromUrl(input);
+      // Declaration only, no assignment here - DO NOT parse OME-Zarr files here
+      let tiff;
+      let GeoTiffSetLocal = opts.GeoTiffSet;
+
+      consolelog("In getAllTileSources, options:", opts);
+
       // --------------------------------------------------------------
       // detailed with different file formats
       // --------------------------------------------------------------
       try {
-          
+        if (isOZX(input)) {
+          console.log("Loading OME-Zarr File  ...");
+
+          // --- Requirement 1 & 2: Implement omeZarrImages ---
+          // This function obtains metadata and returns the tile source.
+          const omeZarrImages = async (urlOrFile) => {
+            // Get metadata (T, C, Z sizes)
+            const metadata = await OmeNgffOzxTileSource.getMetadata(urlOrFile);
+
+            if (!metadata) {
+              console.error("Failed to get OME-Zarr metadata.");
+              return null;
+            }
+
+            // Determine default values (use 0 if dimension exists)
+            const zVal = metadata.zSize > 1 ? 0 : undefined;
+            const cVal = metadata.cSize > 1 ? 0 : undefined;
+            const tVal = metadata.tSize > 1 ? 0 : undefined;
+
+            // Construct the TileSource
+            // Note: We pass input (File) directly. OmeNgffOzxTileSource constructor
+            // handles File to Blob URL conversion.
+            const tileSource = new OpenSeadragon.OmeNgffOzxTileSource({
+              url: urlOrFile,
+              z: zVal,
+              c: cVal,
+              t: tVal,
+            });
+
+            // Attach metadata to the source so demo.js can use it to build sliders
+            tileSource.OMEZarrMetadata = metadata;
+
+            return tileSource;
+          };
+
+          const tileSource = await omeZarrImages(input);
+          if (!tileSource) return null;
+
+          console.log("Returning OME-Zarr TileSource for OpenSeadragon …", tileSource);
+          return [tileSource];
+        }
+
         if (GeoTiffSetLocal == true) {
-            
           // --------------------------------------------------------------
-          //  GEO‑TIFF-SET (with Z‑stack)
+          //  GEO‑TIFF‑SET (with Z‑stack)
           // --------------------------------------------------------------
-          consolelog("It is GEO‑TIFF-SET (with Z‑stack) ..."); 
+          consolelog("It is GEO‑TIFF-SET (with Z‑stack) ...");
+
+          // Initialize tiff only for GeoTIFF Set
+          tiff = input instanceof File ? fromBlob(input) : fromUrl(input);
 
           return tiff
             .then((t) => {
@@ -213,14 +256,15 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
                 let s = ""; // Initialize with no description
 
                 // Check whether the ImageDescription exists as a field just in case
-                if (image.fileDirectory.ImageDescription){
+                if (image.fileDirectory.ImageDescription) {
                   // Split out part of the description that signifies its type for identification
                   s = image.fileDirectory.ImageDescription.split("\n")[1] ?? "";
                 }
-                
+
                 const exists = accumulator.filter(
-                  (set) => ((Math.abs(1 - set.aspectRatio / r) < tolerance)
-                    && !(s?.includes("macro") || s?.includes("label"))) // Separate out macro thumbnails and labels
+                  (set) =>
+                    Math.abs(1 - set.aspectRatio / r) < tolerance &&
+                    !(s?.includes("macro") || s?.includes("label")) // Separate out macro thumbnails and labels
                 );
                 if (exists.length === 0) {
                   let set = {
@@ -276,16 +320,16 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
                 }
               });
             });
-
-        }////GEO‑TIFF-SET (with Z‑stack)
+        } ////GEO‑TIFF-SET (with Z‑stack)
 
         //GEO-TIFF or SVS
-        else{
-
+        else {
           // --------------------------------------------------------------
           //  SVS / GEO‑TIFF (without Z‑stack)
           // --------------------------------------------------------------
-          consolelog("It is svs or GEO-Tiff  ..."); 
+          consolelog("It is svs or GEO-Tiff  ...");
+          // Initialize tiff only for SVS / Geo-TIFF
+          tiff = input instanceof File ? fromBlob(input) : fromUrl(input);
 
           return tiff
             .then((t) => {
@@ -317,14 +361,15 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
                 let s = ""; // Initialize with no description
 
                 // Check whether the ImageDescription exists as a field just in case
-                if (image.fileDirectory.ImageDescription){
+                if (image.fileDirectory.ImageDescription) {
                   // Split out part of the description that signifies its type for identification
                   s = image.fileDirectory.ImageDescription.split("\n")[1] ?? "";
                 }
-                
+
                 const exists = accumulator.filter(
-                  (set) => ((Math.abs(1 - set.aspectRatio / r) < tolerance)
-                    && !(s?.includes("macro") || s?.includes("label"))) // Separate out macro thumbnails and labels
+                  (set) =>
+                    Math.abs(1 - set.aspectRatio / r) < tolerance &&
+                    !(s?.includes("macro") || s?.includes("label")) // Separate out macro thumbnails and labels
                 );
                 if (exists.length === 0) {
                   let set = {
@@ -380,19 +425,14 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
                 }
               });
             });
-      
-        }////GEO-TIFF or SVS
-        
+        } ////GEO-TIFF or SVS
       } catch (e) {
-          console.error(e);
-		  
-      }///// deal with different file formats  
+        console.error(e);
+        return null;
+      } ///// deal with different file formats
 
       return null;
-	  
     };
-
-
 
     /**
      * Return the tileWidth for a given level.
@@ -532,7 +572,7 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
         this.maxLevel = this.levels.length - 1;
       } else {
         let numPowersOfTwo = Math.ceil(
-          Math.log2(Math.max(fullWidth / defaultTileWidth, fullHeight / defaultTileHeight))
+          Math.log2(Math.max(fullWidth / defaultTileWidth, fullHeight / defaultTileWidth))
         );
         let levelsToUse = [...Array(numPowersOfTwo).keys()].filter((v) => v % 2 == 0); //use every other power of two for scales in the "pyramid"
 
@@ -707,10 +747,55 @@ export const enableGeoTIFFTileSource = (OpenSeadragon) => {
     };
   }
 
+  function isSVSTiff(urlOrFile) {
+    if (Array.isArray(urlOrFile)) return false; // local Zarr is array of File objects
+    const name = typeof urlOrFile === "string" ? urlOrFile : urlOrFile.name;
+    return (
+      !(
+        name.includes(".ezio.tiff.txt") ||
+        name.includes(".ezio.tif.txt") ||
+        name.includes(".ezio.tiff") ||
+        name.includes(".ezio.tif") ||
+        name.includes(".ezio") ||
+        name.includes(".companion.ome") ||
+        name.includes(".companion.ezio") ||
+        name.includes(".tiff") ||
+        name.includes(".tif") ||
+        name.includes(".svs")
+      ) &&
+      (name.includes(".tiff") || name.includes(".tif") || name.includes(".svs"))
+    );
+  }
+
+  function isOZX(urlOrFile) {
+    if (Array.isArray(urlOrFile)) return false; // local Zarr is array of File objects
+    const name = typeof urlOrFile === "string" ? urlOrFile : urlOrFile.name;
+
+    const lower = name.toLowerCase();
+    // Check for OME-Zarr file extensions
+    return (
+      lower.endsWith(".ozx") ||
+      lower.endsWith(".zarr") ||
+      lower.endsWith(".zip") ||
+      lower.includes(".zarr") ||
+      (name.includes(".") && name.split(".").pop() === "zarr")
+    );
+  }
+
+  // -----------------------------------------------------------------
+  // Attach both tile‑source classes to the OSD namespace.
+  // -----------------------------------------------------------------
 
   // Attach the class to the OpenSeadragon namespace
   OpenSeadragon.GeoTIFFTileSource = GeoTIFFTileSource;
+
+  OpenSeadragon.OmeNgffOzxTileSource = OmeNgffOzxTileSource;
 };
+
+/* -----------------------------------------------------------------
+   IIFE that automatically registers the source when OpenSeadragon is
+   present in the global scope.
+----------------------------------------------------------------- */
 
 // Run an IIFE to attach the GeoTIFFTileSource to the OpenSeadragon namespace
 // IF OpenSeadragon is available in the global scope

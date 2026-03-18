@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 import license from "rollup-plugin-license";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   build: {
     sourcemap: true,
     lib: {
@@ -20,7 +25,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-		format: 'iife', // Or 'umd'
+        format: "iife", // Or 'umd'
         inlineDynamicImports: true,
       },
     },
@@ -39,13 +44,17 @@ export default defineConfig({
   test: {
     environment: "jsdom",
   },
-  worker: { // Or build.rollupOptions.output if not worker-specific
-			rollupOptions: {
-			  output: {
-				format: 'iife', // Or 'umd'
-				inlineDynamicImports: true,
-			  },
-			},
-   },
-	  
+  worker: {
+    // Or build.rollupOptions.output if not worker-specific
+    rollupOptions: {
+      output: {
+        format: "iife", // Or 'umd'
+        inlineDynamicImports: true,
+      },
+    },
+  },
+  // Configure Vite to copy WASM files from src/turbojpeg-codec to public
+  // and treat them as assets
+  publicDir: "public",
+  assetsInclude: ["**/*.wasm"],
 });
