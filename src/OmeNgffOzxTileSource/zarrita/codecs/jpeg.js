@@ -8,7 +8,7 @@ function log(...args) {
 
 // Performance tracking
 const perfStats = {
-  turbo: { count: 0, totalTime: 0, maxTime: 0 },
+  turbo: { count: 0, totalTime: 0, maxTime: 0, totalWallTime: 0 },
   native: { count: 0, totalTime: 0, maxTime: 0 },
 };
 
@@ -17,6 +17,10 @@ function printPerfStats() {
     const turboAvg =
       perfStats.turbo.count > 0
         ? (perfStats.turbo.totalTime / perfStats.turbo.count).toFixed(2)
+        : 0;
+    const turboWallAvg =
+      perfStats.turbo.count > 0
+        ? (perfStats.turbo.totalWallTime / perfStats.turbo.count).toFixed(2)
         : 0;
     const nativeAvg =
       perfStats.native.count > 0
@@ -31,7 +35,7 @@ function printPerfStats() {
 
     console.log(
       `[JpegCodec] Performance: \n` +
-        `  Turbo Worker: ${perfStats.turbo.count} tiles, avg ${turboAvg}ms, max ${perfStats.turbo.maxTime.toFixed(2)}ms\n` +
+        `  Turbo Worker: ${perfStats.turbo.count} tiles, pure decode avg ${turboAvg}ms (queue+decode avg ${turboWallAvg}ms), max ${perfStats.turbo.maxTime.toFixed(2)}ms\n` +
         `  Native Main:  ${perfStats.native.count} tiles, avg ${nativeAvg}ms, max ${perfStats.native.maxTime.toFixed(2)}ms` +
         speedup
     );
@@ -136,7 +140,11 @@ async function decodeNative(bytes, height, width) {
 // -----------------------------------------------------------------
 // Web Worker Pool for TurboJPEG
 // -----------------------------------------------------------------
-const NUM_WORKERS = Math.max(1, (navigator.hardwareConcurrency || 4) - 1);
+// Increase worker count significantly. For tasks like WASM decompression that
+// might have brief IO/memory pauses, oversubscribing the CPU cores (1.5x)
+// often yields higher throughput than matching them 1:1.
+const NUM_WORKERS = Math.max(4, Math.floor((navigator.hardwareConcurrency || 4) * 1.5));
+const MAX_IN_FLIGHT = NUM_WORKERS * 3; // Allow deep queues so workers never starve
 const workers = [];
 let workerIdCounter = 0;
 let requestCounter = 0;
@@ -155,17 +163,20 @@ function getWorker() {
         const worker = new Worker(new URL("./jpeg-worker.js", import.meta.url), { type: "module" });
 
         worker.onmessage = (e) => {
-          const { id, result, error, success } = e.data;
+          const { id, result, error, success, workerTime } = e.data;
           const req = pendingRequests.get(id);
           inFlightCount--;
 
           if (req) {
             pendingRequests.delete(id);
             if (success) {
-              const timeMs = performance.now() - req.start;
+              const wallTimeMs = performance.now() - req.start;
+              const pureTimeMs = workerTime || wallTimeMs; // Use exact worker time if available
+
               perfStats.turbo.count++;
-              perfStats.turbo.totalTime += timeMs;
-              perfStats.turbo.maxTime = Math.max(perfStats.turbo.maxTime, timeMs);
+              perfStats.turbo.totalTime += pureTimeMs;
+              perfStats.turbo.totalWallTime += wallTimeMs;
+              perfStats.turbo.maxTime = Math.max(perfStats.turbo.maxTime, pureTimeMs);
               req.resolve(new Uint8Array(result));
             } else {
               req.reject(new Error(error));
@@ -194,9 +205,9 @@ function getWorker() {
 }
 
 function processWorkerQueue() {
-  // If we've maxed out workers or nothing to process, wait
+  // If we've maxed out workers' internal queues or nothing to process, wait
   if (
-    inFlightCount >= NUM_WORKERS ||
+    inFlightCount >= MAX_IN_FLIGHT ||
     (highPriorityQueue.length === 0 && lowPriorityQueue.length === 0)
   ) {
     return;
@@ -231,7 +242,7 @@ function processWorkerQueue() {
 
   // Try to schedule another if we have capacity
   if (
-    inFlightCount < NUM_WORKERS &&
+    inFlightCount < MAX_IN_FLIGHT &&
     (highPriorityQueue.length > 0 || lowPriorityQueue.length > 0)
   ) {
     processWorkerQueue();
@@ -253,10 +264,7 @@ async function decodeTurboWorker(bytes, expectedHeight, expectedWidth) {
     pendingRequests.set(id, task);
 
     // Add to appropriate queue
-    // We guess if it's a prefetch by seeing if there are a massive amount of pending requests,
-    // or by letting the caller specify (though we can't easily change the pipeline API)
     // Heuristic: If we suddenly get > 8 requests, the later ones are probably prefetches
-    // Let's also prioritize small tiles since they load faster and show context sooner
     if (pendingRequests.size > 8 || expectedWidth > 1024) {
       lowPriorityQueue.push(task);
     } else {
