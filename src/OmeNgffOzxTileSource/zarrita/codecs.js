@@ -9,9 +9,9 @@ import { ZlibCodec } from "./codecs/zlib.js";
 import { assert } from "./util.js";
 function create_default_registry() {
   return new Map()
-    .set("blosc", () => import("numcodecs/blosc.js").then((m) => m.default))
-    .set("lz4", () => import("numcodecs/lz4.js").then((m) => m.default))
-    .set("zstd", () => import("numcodecs/zstd.js").then((m) => m.default))
+    .set("blosc", () => import("numcodecs").then((m) => m.Blosc))
+    .set("lz4", () => import("numcodecs").then((m) => m.LZ4))
+    .set("zstd", () => import("numcodecs").then((m) => m.Zstd))
     .set("gzip", () => GzipCodec)
     .set("zlib", () => ZlibCodec)
     .set("transpose", () => TransposeCodec)

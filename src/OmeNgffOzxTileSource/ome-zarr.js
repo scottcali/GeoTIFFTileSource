@@ -12380,12 +12380,22 @@ function O(e, a) {
 }
 function j(e) {
   const a = e.data;
-  let t = 0,
-    l = 1 / 0,
+  let t = -Infinity,
+    l = Infinity,
     r = e.data.length;
   for (let n = 0; n < r; n++) {
     let s = Number(a[n]);
     (t = Math.max(t, s)), (l = Math.min(l, s));
+  }
+  // Handle case where all values are the same or array is empty
+  if (l === Infinity || t === -Infinity) {
+    l = 0;
+    t = 1;
+  }
+  // Handle case where min equals max (flat data)
+  if (l === t) {
+    l = t - 1;
+    t = t + 1;
   }
   return [l, t];
 }
@@ -12410,6 +12420,19 @@ function X(e, a, t, l, r, n = !1, axes) {
     h = 0;
     let A = e[0].data; // Single array with interleaved RGB data
 
+    // Calculate global min/max for RGB channels when not provided
+    let globalMin = Infinity;
+    let globalMax = -Infinity;
+
+    if (!a || !a[0] || a[0][0] === undefined || a[0][1] === undefined) {
+      // Need to compute min/max across all RGB channels
+      for (let idx = 0; idx < A.length; idx++) {
+        const val = Number(A[idx]);
+        globalMin = Math.min(globalMin, val);
+        globalMax = Math.max(globalMax, val);
+      }
+    }
+
     // Process pixel data in groups of 3 (RGB)
     // Total pixels = width * height = c
     // Total RGB values = c * 3
@@ -12424,16 +12447,21 @@ function X(e, a, t, l, r, n = !1, axes) {
       let normalizedR, normalizedG, normalizedB;
 
       if (a && a[0] && a[0][0] !== undefined && a[0][1] !== undefined) {
-        // Use provided min/max values for normalization
-        normalizedR = (rVal - a[0][0]) / (a[0][1] - a[0][0]);
-        normalizedG = (gVal - a[0][0]) / (a[0][1] - a[0][0]);
-        normalizedB = (bVal - a[0][0]) / (a[0][1] - a[0][0]);
+        // Use provided min/max values for normalization (same for all channels)
+        const minValue = a[0][0];
+        const maxValue = a[0][1];
+        const range = maxValue - minValue || 1; // Prevent divide by zero
+
+        normalizedR = (rVal - minValue) / range;
+        normalizedG = (gVal - minValue) / range;
+        normalizedB = (bVal - minValue) / range;
       } else {
-        // Normalize to range [0, 1] using max of RGB values to preserve relative intensities
-        const maxValue = Math.max(rVal, gVal, bVal, 1); // Prevent divide by zero
-        normalizedR = rVal / maxValue;
-        normalizedG = gVal / maxValue;
-        normalizedB = bVal / maxValue;
+        // Use calculated global min/max values
+        const range = globalMax - globalMin || 1; // Prevent divide by zero
+
+        normalizedR = (rVal - globalMin) / range;
+        normalizedG = (gVal - globalMin) / range;
+        normalizedB = (bVal - globalMin) / range;
       }
 
       // Clamp and ensure proper normalization to [0, 1]

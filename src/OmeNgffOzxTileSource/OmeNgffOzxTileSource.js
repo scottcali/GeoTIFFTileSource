@@ -19,11 +19,7 @@ import ZipFileStore from "./zarrita-storage/zip.js";
 import OpenSeadragon from "openseadragon";
 
 // Import codecs (they are side‑effect‑imported by codec‑bootstrap)
-import "numcodecs/blosc.js";
-import "numcodecs/gzip.js";
-import "numcodecs/zlib.js";
-import "numcodecs/lz4.js";
-import "numcodecs/zstd.js";
+// Note: These are now handled by codec-bootstrap.js
 
 // Import the codec bootstrap to ensure proper initialization
 import { codecBootstrapReady } from "./codec-bootstrap.js";

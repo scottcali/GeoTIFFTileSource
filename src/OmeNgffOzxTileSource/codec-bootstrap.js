@@ -16,40 +16,17 @@ if (typeof globalThis.numcodecs === "undefined") {
 
 // Load all codecs with better error handling
 const codecBootstrapReady = Promise.all([
-  import("numcodecs/blosc.js")
+  import("numcodecs")
     .then((m) => {
-      console.log("[CodecBootstrap] blosc codec loaded");
+      console.log("[CodecBootstrap] numcodecs module loaded");
+      // Register codecs if they exist
+      if (m.Blosc) {
+        console.log("[CodecBootstrap] blosc codec available");
+      }
       return m;
     })
     .catch((e) => {
-      console.warn("[CodecBootstrap] blosc failed to load:", e.message);
-      return null;
-    }),
-  import("numcodecs/gzip.js")
-    .then((m) => {
-      console.log("[CodecBootstrap] gzip codec loaded");
-      return m;
-    })
-    .catch((e) => {
-      console.warn("[CodecBootstrap] gzip failed to load:", e.message);
-      return null;
-    }),
-  import("numcodecs/zlib.js")
-    .then((m) => {
-      console.log("[CodecBootstrap] zlib codec loaded");
-      return m;
-    })
-    .catch((e) => {
-      console.warn("[CodecBootstrap] zlib failed to load:", e.message);
-      return null;
-    }),
-  import("numcodecs/lz4.js")
-    .then((m) => {
-      console.log("[CodecBootstrap] lz4 codec loaded");
-      return m;
-    })
-    .catch((e) => {
-      console.warn("[CodecBootstrap] lz4 failed to load:", e.message);
+      console.warn("[CodecBootstrap] numcodecs failed to load:", e.message);
       return null;
     }),
 ])
