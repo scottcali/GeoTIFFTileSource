@@ -12,22 +12,16 @@
     "sourceMap": true,
     "emitDeclarationOnly": true,
     "importHelpers": false,
-    "strict": false,
+    "strict": true,
     "strictNullChecks": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": false,
     "inlineSources": false,
-    "downlevelIteration": true
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    "downlevelIteration": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-
-    /* Linting */
-    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
@@ -35,9 +29,5 @@
     "noUncheckedSideEffectImports": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": [
-    "./src/**/*.js",
-    "vite.config.ts", 
-    "src"    
-  ]
+  "include": ["./src/**/*.js", "vite.config.ts", "src"]
 }
