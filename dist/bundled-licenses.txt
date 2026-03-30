@@ -6,12 +6,45 @@ Description: IEEE 754 half-precision floating-point for JavaScript
 Repository: https://github.com/petamoriken/float16.git
 Homepage: https://github.com/petamoriken/float16
 Author: Kenta Moriuchi <moriken@kimamass.com> (https://moriken.dev)
-License Copyright:
+License Text:
 ===
 
 MIT License
 
 Copyright (c) 2017-2025 Kenta Moriuchi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Name: geotiff-tilesource
+Version: 2.2.0
+License: null
+Private: false
+Description: A plugin tilesource for OpenSeadragon that uses geotiff.js to provide serverless access to view compatible local or remote TIFF files
+Repository: git+https://github.com/scottcali/GeoTIFFTileSource.git
+License Text:
+===
+
+MIT License
+
+Copyright (c) 2022-2024 Thomas Pearce (pearcetm) and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +74,7 @@ Description: Parse XML without Blowing Up Your Bundle Size
 Repository: git+https://github.com/DanielJDufour/xml-utils.git
 Homepage: https://github.com/DanielJDufour/xml-utils#readme
 Author: Daniel J. Dufour
-License Copyright:
+License Text:
 ===
 
 Creative Commons Legal Code
@@ -168,39 +201,6 @@ express Statement of Purpose.
 
 ---
 
-Name: geotiff-tilesource
-Version: 2.2.0
-License: null
-Private: false
-Description: A plugin tilesource for OpenSeadragon that uses geotiff.js to provide serverless access to view compatible local or remote TIFF files
-Repository: git+https://github.com/scottcali/GeoTIFFTileSource.git
-License Copyright:
-===
-
-MIT License
-
-Copyright (c) 2022-2024 Thomas Pearce (pearcetm) and contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
----
-
 Name: web-worker
 Version: 1.5.0
 License: Apache-2.0
@@ -208,7 +208,7 @@ Private: false
 Description: Consistent Web Workers in browser and Node.
 Repository: undefined
 Homepage: https://github.com/developit/web-worker
-License Copyright:
+License Text:
 ===
 
                                  Apache License
@@ -422,7 +422,7 @@ Private: false
 Description: Simple “Least Recently Used” (LRU) cache
 Repository: undefined
 Author: Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -444,7 +444,7 @@ Private: false
 Description: The core `url` packaged standalone for use with Browserify.
 Repository: https://github.com/defunctzombie/node-url.git
 Author: defunctzombie
-License Copyright:
+License Text:
 ===
 
 The MIT License (MIT)
@@ -482,7 +482,7 @@ Author: Mathias Bynens (https://mathiasbynens.be/)
 Contributors:
   Mathias Bynens (https://mathiasbynens.be/)
   John-David Dalton (http://allyoucanleet.com/)
-License Copyright:
+License Text:
 ===
 
 Copyright Mathias Bynens <https://mathiasbynens.be/>
@@ -516,7 +516,7 @@ Description: A simple cache for a few of the JS Error constructors.
 Repository: git+https://github.com/ljharb/es-errors.git
 Homepage: https://github.com/ljharb/es-errors#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -551,7 +551,7 @@ Description: string representations of objects in node and the browser
 Repository: git://github.com/inspect-js/object-inspect.git
 Homepage: https://github.com/inspect-js/object-inspect
 Author: James Halliday <mail@substack.net> (http://substack.net)
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -586,7 +586,7 @@ Description: Store information about any JS value in a side channel, using a lin
 Repository: git+https://github.com/ljharb/side-channel-list.git
 Homepage: https://github.com/ljharb/side-channel-list#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -621,7 +621,7 @@ Description: ES Object-related atoms: Object, ToObject, RequireObjectCoercible
 Repository: git+https://github.com/ljharb/es-object-atoms.git
 Homepage: https://github.com/ljharb/es-object-atoms#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -656,7 +656,7 @@ Description: ES Math-related intrinsics and helpers, robustly cached.
 Repository: git+https://github.com/es-shims/math-intrinsics.git
 Homepage: https://github.com/es-shims/math-intrinsics#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -691,7 +691,7 @@ Description: `Object.getOwnPropertyDescriptor`, but accounts for IE's broken imp
 Repository: git+https://github.com/ljharb/gopd.git
 Homepage: https://github.com/ljharb/gopd#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -726,7 +726,7 @@ Description: `Object.defineProperty`, but not IE 8's broken one.
 Repository: git+https://github.com/ljharb/es-define-property.git
 Homepage: https://github.com/ljharb/es-define-property#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -763,7 +763,7 @@ Homepage: https://github.com/ljharb/has-symbols#readme
 Author: Jordan Harband <ljharb@gmail.com> (http://ljharb.codes)
 Contributors:
   Jordan Harband <ljharb@gmail.com> (http://ljharb.codes)
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -798,7 +798,7 @@ Description: Robustly get the [[Prototype]] of an object
 Repository: git+https://github.com/ljharb/get-proto.git
 Homepage: https://github.com/ljharb/get-proto#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -836,7 +836,7 @@ Author: Raynos <raynos2@gmail.com>
 Contributors:
   Raynos
   Jordan Harband (https://github.com/ljharb)
-License Copyright:
+License Text:
 ===
 
 Copyright (c) 2013 Raynos.
@@ -869,7 +869,7 @@ Description: Helper functions around Function call/apply/bind, for use in `call-
 Repository: git+https://github.com/ljharb/call-bind-apply-helpers.git
 Homepage: https://github.com/ljharb/call-bind-apply-helpers#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -904,7 +904,7 @@ Description: If available, the `Object.prototype.__proto__` accessor and mutator
 Repository: git+https://github.com/es-shims/dunder-proto.git
 Homepage: https://github.com/es-shims/dunder-proto#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -939,7 +939,7 @@ Description: A robust, ES3 compatible, "has own property" predicate.
 Repository: git+https://github.com/inspect-js/hasOwn.git
 Homepage: https://github.com/inspect-js/hasOwn#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -974,7 +974,7 @@ Description: Get and robustly cache all JS language-level intrinsics at first re
 Repository: git+https://github.com/ljharb/get-intrinsic.git
 Homepage: https://github.com/ljharb/get-intrinsic#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -1009,7 +1009,7 @@ Description: Robust call-bound JavaScript intrinsics, using `call-bind` and `get
 Repository: git+https://github.com/ljharb/call-bound.git
 Homepage: https://github.com/ljharb/call-bound#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -1044,7 +1044,7 @@ Description: Store information about any JS value in a side channel, using a Map
 Repository: git+https://github.com/ljharb/side-channel-map.git
 Homepage: https://github.com/ljharb/side-channel-map#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -1079,7 +1079,7 @@ Description: Store information about any JS value in a side channel. Uses WeakMa
 Repository: git+https://github.com/ljharb/side-channel-weakmap.git
 Homepage: https://github.com/ljharb/side-channel-weakmap#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -1114,7 +1114,7 @@ Description: Store information about any JS value in a side channel. Uses WeakMa
 Repository: git+https://github.com/ljharb/side-channel.git
 Homepage: https://github.com/ljharb/side-channel#readme
 Author: Jordan Harband <ljharb@gmail.com>
-License Copyright:
+License Text:
 ===
 
 MIT License
@@ -1142,7 +1142,7 @@ SOFTWARE.
 ---
 
 Name: qs
-Version: 6.14.1
+Version: 6.14.2
 License: BSD-3-Clause
 Private: false
 Description: A querystring parser that supports nesting and arrays, with a depth limit
@@ -1150,7 +1150,7 @@ Repository: https://github.com/ljharb/qs.git
 Homepage: https://github.com/ljharb/qs
 Contributors:
   Jordan Harband <ljharb@gmail.com> (http://ljharb.codes)
-License Copyright:
+License Text:
 ===
 
 BSD 3-Clause License
@@ -1185,6 +1185,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
+Name: openseadragon
+Version: 4.1.1
+License: BSD-3-Clause
+Private: false
+Description: Provides a smooth, zoomable user interface for HTML/Javascript.
+Repository: https://github.com/openseadragon/openseadragon.git
+Homepage: https://openseadragon.github.io/
+License Text:
+===
+
+Copyright (C) 2009 CodePlex Foundation
+Copyright (C) 2010-2024 OpenSeadragon contributors
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+- Neither the name of CodePlex Foundation nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+---
+
 Name: pako
 Version: 2.1.0
 License: (MIT AND Zlib)
@@ -1198,7 +1239,7 @@ Contributors:
   Kirill Efimov (https://github.com/Kirill89)
   Jean-loup Gailly
   Mark Adler
-License Copyright:
+License Text:
 ===
 
 (The MIT License)
@@ -1226,7 +1267,7 @@ THE SOFTWARE.
 ---
 
 Name: lerc
-Version: 4.0.4
+Version: 4.1.1
 License: Apache-2.0
 Private: false
 Description: Rapid decoding of Lerc compressed raster data for any standard pixel type.
@@ -1246,7 +1287,7 @@ Private: false
 Description: ZSTD (Zstandard) decoder for Web and Node.js, using WebAssembly
 Repository: undefined
 Author: Don McCurdy <dm@donmccurdy.com>
-License Copyright:
+License Text:
 ===
 
 The MIT License (MIT)
@@ -1303,3 +1344,72 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+---
+
+Name: numcodecs
+Version: 0.3.1
+License: MIT
+Private: false
+Description: Buffer compression and transformation codecs for use in data storage and communication applications.
+Repository: https://github.com/manzt/numcodecs.js.git
+Author: Trevor Manz
+License Text:
+===
+
+MIT License
+
+Copyright (c) 2020 Trevor Manz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Name: fflate
+Version: 0.8.2
+License: MIT
+Private: false
+Description: High performance (de)compression in an 8kB package
+Repository: undefined
+Homepage: https://101arrowz.github.io/fflate
+Author: Arjun Barrett <arjunbarrett@gmail.com>
+License Text:
+===
+
+MIT License
+
+Copyright (c) 2023 Arjun Barrett
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

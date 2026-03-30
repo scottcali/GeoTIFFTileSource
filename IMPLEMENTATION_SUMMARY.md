@@ -1,76 +1,81 @@
-# OME-Zarr RGB Data Handling Implementation Summary
+# OME-Zarr Implementation Fixes Summary
 
-## Problem Addressed
+## Overview
 
-The OME-Zarr implementation was not properly handling RGB data when stored together in shape `[1, nZ, h, w, 3]` format versus the traditional channel-separated format `[1, 3, nZ, h, w]`. This caused incorrect rendering of RGB images that have channels combined in the last dimension.
+This document summarizes the fixes implemented to resolve issues with OME-Zarr display (images showing completely black) and dependency import problems with numcodecs and lerc modules.
 
-## Solution Implemented
+## Issues Addressed
 
-Modified the `renderTo8bitArray` function in `ome-zarr.js` to detect and handle both data formats appropriately:
+### 1. OME-Zarr RGB Data Black Display Issue
 
-### 1. Format Detection Logic
+- **Problem**: OME-Zarr images were displaying completely black in the viewer
+- **Root Cause**: Issues with RGB data normalization in `getMinMaxValues` and `renderTo8bitArray` functions in ome-zarr.js
+- **Solution**: Enhanced error handling and improved normalization logic for RGB data
 
-The implementation detects the data format by examining:
+### 2. Dependency Import Issues
 
-- **Array count**: If `e.length === 1`, it indicates a single array with interleaved RGB data
-- **Shape ending**: If the shape ends with `3`, it suggests RGB channel data
-- **Combined condition**: Both conditions together indicate RGB-stored-together format
+- **Problem**: Module import errors with numcodecs and lerc packages
+- **Root Cause**: Changes in how newer versions of these packages export their functionality
+- **Solution**: Updated codec-bootstrap.js and related files to properly import and register codecs
 
-### 2. Processing Logic
+## Technical Details
 
-#### For RGB-Stored-Together Format `[1, nZ, h, w, 3]`:
+### RGB Normalization Fixes (ome-zarr.js)
 
-- Single array with interleaved RGB data (R,G,B,R,G,B,...)
-- Process pixels in groups of 3 values
-- Each RGB triplet represents one pixel's color values
-- Properly normalize and scale RGB values to 0-255 range
-- Apply inversion effects if specified
+1. Enhanced `getMinMaxValues` function with:
+   - Protection against empty arrays
+   - Special handling for identical min/max values (prevents division by zero)
+   - Additional checks for valid range values
+2. Improved `renderTo8bitArray` function with:
+   - Correct handling of RGB-stored-together format [1, nZ, h, w, 3]
+   - Global min/max calculation across RGB channels when specific values are missing
+   - Proper scaling factor calculation to prevent black images
 
-#### For Channel-Separated Format `[1, 3, nZ, h, w]`:
+### Codec Dependency Fixes
 
-- Multiple arrays, one per channel (preserves existing logic)
-- Process each channel independently as before
-- Combine channel data using existing color mapping and LUT logic
+#### codec-bootstrap.js Updates
 
-### 3. Implementation Details
+1. Created proper global registry for numcodecs
+2. Improved error handling for codec loading
+3. Added better logging for debugging purposes
 
-Function signature updated to:
+#### zarrita/codecs.js Updates
 
-```javascript
-function X(e, a, t, l, r, n = !1, axes)
-```
+1. Updated dynamic import statements for named exports from numcodecs:
+   - `import("numcodecs").then((m) => m.Blosc)`
+   - `import("numcodecs").then((m) => m.LZ4)`
+   - `import("numcodecs").then((m) => m.Zstd)`
 
-Key changes in `src/OmeNgffOzxTileSource/ome-zarr.js`:
+#### lerc.js Updates
 
-1. Added `axes` parameter to receive axis information from renderImage function
-2. Updated renderImage call to pass axes information
-3. Implemented format detection based on array count and shape
-4. Added specific processing logic for RGB-stored-together format
-5. Maintained backward compatibility with existing channel-separated format processing
+1. Changed import statement to properly handle ES module import:
+   - `import * as Lerc from "lerc"`
 
-## Backward Compatibility
+#### OmeNgffOzxTileSource.js Updates
 
-The implementation maintains full backward compatibility by:
+1. Removed obsolete direct codec imports
+2. Updated to use codec-bootstrap.js for proper codec initialization
 
-- Preserving all existing logic for channel-separated data format
-- Only activating new processing when RGB-stored-together format is detected
-- Using the same function signature with optional parameters
-- Maintaining identical output format (Uint8ClampedArray)
+## Verification
 
-## Testing
-
-Verified implementation with test cases covering:
-
-- Channel-separated format detection (multiple arrays)
-- RGB-stored-together format detection (single array)
-- Various shape combinations
-- Edge cases and fallback scenarios
+- Tests pass successfully (4 tests in 2 test files)
+- Build completes without errors
+- Distribution files are properly generated
+- All codec dependencies are correctly resolved
 
 ## Files Modified
 
-1. `src/OmeNgffOzxTileSource/ome-zarr.js` - Main implementation
-2. `package.json` - Minor cleanup (removed duplicate entries)
+1. `src/OmeNgffOzxTileSource/ome-zarr.js` - RGB normalization logic
+2. `src/OmeNgffOzxTileSource/codec-bootstrap.js` - Codec initialization
+3. `src/OmeNgffOzxTileSource/zarrita/codecs.js` - Dynamic codec imports
+4. `src/utils/compression/lerc.js` - LERC codec import handling
+5. `src/OmeNgffOzxTileSource/OmeNgffOzxTileSource.js` - Removed obsolete imports
 
-## Build Status
+## Testing
 
-Project builds successfully with implemented changes (dependency issues in numcodecs are unrelated to our changes).
+Created check files for:
+
+1. OME-Zarr RGB normalization verification
+2. Codec dependency management verification
+
+Both checks are located in `.continue/checks/` directory.
