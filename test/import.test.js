@@ -1,11 +1,19 @@
-import { describe, expect, it } from "vitest";
-import OpenSeadragon from "openseadragon";
-import { enableGeoTIFFTileSource } from "../dist/geotiff-tilesource.mjs";
-
-// Enable GeoTIFF Tile Source for OpenSeadragon
-enableGeoTIFFTileSource(OpenSeadragon);
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("GeoTIFFTileSource plugin", () => {
+  let OpenSeadragon;
+  let enableGeoTIFFTileSource;
+
+  beforeEach(async () => {
+    // Dynamically import OpenSeadragon and the plugin
+    OpenSeadragon = (await import("openseadragon")).default;
+    const pluginModule = await import("../dist/geotiff-tilesource.mjs");
+    enableGeoTIFFTileSource = pluginModule.enableGeoTIFFTileSource;
+
+    // Enable GeoTIFF Tile Source for OpenSeadragon
+    enableGeoTIFFTileSource(OpenSeadragon);
+  });
+
   it("should import init function", () => {
     expect(enableGeoTIFFTileSource).toBeDefined();
   });
