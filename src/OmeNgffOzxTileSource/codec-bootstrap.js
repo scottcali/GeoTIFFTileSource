@@ -21,7 +21,24 @@ const codecBootstrapReady = Promise.all([
       console.log("[CodecBootstrap] numcodecs module loaded");
       // Register codecs if they exist
       if (m.Blosc) {
-        console.log("[CodecBootstrap] blosc codec available");
+        globalThis.numcodecs.registerCodec({ name: "blosc", codec: m.Blosc });
+        console.log("[CodecBootstrap] blosc codec registered");
+      }
+      if (m.LZ4) {
+        globalThis.numcodecs.registerCodec({ name: "lz4", codec: m.LZ4 });
+        console.log("[CodecBootstrap] lz4 codec registered");
+      }
+      if (m.Zstd) {
+        globalThis.numcodecs.registerCodec({ name: "zstd", codec: m.Zstd });
+        console.log("[CodecBootstrap] zstd codec registered");
+      }
+      if (m.GZip) {
+        globalThis.numcodecs.registerCodec({ name: "gzip", codec: m.GZip });
+        console.log("[CodecBootstrap] gzip codec registered");
+      }
+      if (m.Zlib) {
+        globalThis.numcodecs.registerCodec({ name: "zlib", codec: m.Zlib });
+        console.log("[CodecBootstrap] zlib codec registered");
       }
       return m;
     })
